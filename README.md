@@ -46,7 +46,7 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 > **INDICATORS**
 >
 > -   DONE : ✅ - [production]()
-> -   IN PROGRESS : 🔁 - [development](https://github.com/commown-shared-wallet/contracts-dapps/deployments/activity_log?environment=Preview)
+> -   IN PROGRESS : 🔁 - [development](https://github.com/commown-shared-wallet/contracts-dapps/deployments/activity_log?environment=Preview+–+dapps-interface)
 > -   TO DO : 🚧
 
 |                                        RELEASE                                         | DESCRIPTION                                    | STATUS |
