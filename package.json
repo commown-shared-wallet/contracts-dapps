@@ -61,7 +61,7 @@
         "semantic-release": "^19.0.2",
         "solhint": "^3.3.6",
         "solidity-coverage": "^0.7.16",
-        "standard": "^16.0.4",
+        "standard": "^17.0.0",
         "ts-node": "^10.1.0",
         "typechain": "^5.1.2",
         "typescript": "^4.6.4",
