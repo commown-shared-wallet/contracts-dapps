@@ -87,14 +87,24 @@ contract CommownSW is
         _;
     }
 
-    modifier pocketNotExecuted(uint256 _pocketID) {
-        require(
-            pockets[_pocketID].pStatus != PocketStatus.Executed,
-            "Pocket already executed"
-        );
-        _;
-    }
 
+
+	modifier isCommownOwner(address _sender){
+		require(isOwner[_sender],"not an owner");
+		_;
+	}
+
+	modifier pocketExists(uint _pocketID) {
+		require(_pocketID < pockets.length, "No such pocket exists");
+		_;
+	}
+
+	modifier pocketNotExecuted(uint _pocketID) {
+		require(pockets[_pocketID].pStatus != PocketStatus.Executed, "Pocket already executed");
+		_;
+	}
+
+	
     /// @dev : function initialize
     function initialize(address[] memory _owners, uint8 _confirmationNeeded)
         public
@@ -164,23 +174,20 @@ contract CommownSW is
         (bool success, ) = payable(msg.sender).call{value: _amount}("");
         require(success, "transaction failed");
 
-        emit Withdraw(
-            msg.sender,
-            _amount,
-            balancePerUser[msg.sender],
-            address(this).balance
-        );
-    }
-
-    // signPocket
-    // fundPocket
-    // revokeFundPocket
-    // revokeSignPocket
-    // executePocket == buy
-    // sellPocket
-    // withdrawPocket
-    // withDrawGlobal
-    // allMethodForERC721
+	
+	function proposePocket(address _to, bytes memory _data, uint256 _totalAmount, address[] memory _users, uint256[] memory _sharePerUser, address _nftAdrs, uint256 _nftId, uint256 _nftQtity) external isCommownOwner(msg.sender){
+		require(_users.length > 0, "owners required");
+		require(_users.length == _sharePerUser.length, "length mismatch");
+				
+		uint256 _pocketID = pockets.length;
+        pockets.push(Pocket(_to,_data,PocketStatus.Proposed,_totalAmount));
+        
+		for(uint8 i;i<_users.length;i++){
+			require(isOwner[_users[i]],"not an owner");
+			sharePerUser[_pocketID][_users[i]]=_sharePerUser[i];
+		}
+		
+		items721[_pocketID][_nftAdrs][_nftId]=_nftQtity;
 
     function proposePocket(
         address _to,
@@ -195,17 +202,16 @@ contract CommownSW is
         uint256 _pocketID = pockets.length;
         pockets.push(Pocket(_to, _data, PocketStatus.Proposed, _totalAmount));
 
-        for (uint8 i; i < _users.length; i++) {
-            require(isOwner[_users[i]], "not an owner");
-            sharePerUser[_pocketID][_users[i]] = _sharePerUser[i];
-        }
+	// 	uint256 totalWithdrawed;
+	// 	uint256 toPay;
+	// 	for(uint i;i<)
+	// 		toPay = (totalWithdrawed + totalsharePerUser[_pocketID][msg.sender])
 
         emit ProposePocket(
             msg.sender,
             _pocketID,
             _to,
             _data,
-            PocketStatus.Proposed,
             _totalAmount,
             _sharePerUser
         );
