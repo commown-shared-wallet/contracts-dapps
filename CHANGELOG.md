@@ -1,3 +1,10 @@
+# 1.0.0 (2022-05-08)
+
+
+### Features
+
+* **frontend:** create a frontend folder with all needed packages ([1595669](https://github.com/commown-shared-wallet/contracts-dapps/commit/15956699a3bb74ac8c10997060e841947026f0bd))
+
 # [1.3.0](https://github.com/ym-voting-system/react-interface/compare/v1.2.3...v1.3.0) (2022-05-07)
 
 
