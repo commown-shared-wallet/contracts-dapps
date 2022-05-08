@@ -59,11 +59,6 @@ describe("01_CommownSWProxyFactory__02_createProxy", function () {
     it("01__02-01: it deploys a proxy from sign0", async function () {
         proxyCreated = await proxyFactory.createProxy(addresses, confirmation);
         receipt = await proxyCreated.wait();
-        console.log(
-            receipt.events?.filter((x) => {
-                return x.event == "ProxyCreated";
-            })
-        );
     });
     it("01__02-02: it deploys a proxy from sign0 and emit en event", async function () {
         await expect(proxyFactory.createProxy(addresses, confirmation)).to.emit(
