@@ -1,0 +1,32 @@
+name: Badges
+
+on:
+    workflow_run:
+        workflows: ["Release"]
+        types:
+            - completed
+
+jobs:
+    update-badges:
+        name: Update Badges
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@master
+
+            - name: Extract version
+              id: extract_version
+              uses: Saionaro/extract-package-version@v1.0.6
+            # From now you can access the version
+            - name: Print version
+              run: echo ${{ steps.extract_version.outputs.version }}
+
+            - name: Create Awesome Badge
+              uses: schneegans/dynamic-badges-action@v1.1.0
+              with:
+                  auth: ${{ secrets.GIST_TOKEN_BADGES }}
+                  gistID: b55df4a9fefbf1fe80fea5b7c336ff95
+                  filename: commown-shared-wallet-contract-dapps-badges.json
+                  label: release
+                  message: ${{ steps.extract_version.outputs.version }}
+                  color: green

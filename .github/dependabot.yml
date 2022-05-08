@@ -1,0 +1,16 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+      day: "sunday"
+    ignore:
+      - dependency-name: "node-sass"
+      - dependency-name: "sass-loader"
+    target-branch: "develop"
+    open-pull-requests-limit: 10
+    reviewers:
+      - younesmjl
+    assignees:
+      - younesmjl

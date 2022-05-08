@@ -1,0 +1,14 @@
+name: Changelog
+on:
+  workflow_run:
+    workflows: ["Badges"]
+    types:
+      - completed
+jobs:
+  update-badges:
+    name: Update Changelog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Changelog
+        uses: scottbrenner/generate-changelog-action@master
+        id: Changelog
