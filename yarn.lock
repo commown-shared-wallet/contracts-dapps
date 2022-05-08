@@ -7533,10 +7533,10 @@ hardhat-docgen@^1.3.0:
     vue-template-compiler "^2.6.14"
     webpack "^5.65.0"
 
-hardhat-ethernal@^0.7.1:
-  version "0.7.1"
-  resolved "https://registry.yarnpkg.com/hardhat-ethernal/-/hardhat-ethernal-0.7.1.tgz#a659a61471b8ce914d76087f327813e3002faaac"
-  integrity sha512-pvxwVmBy//Xi7tFeQkC41/EJKn2oxBzJlrPSEyr9KQhb5ZU1rS5zSOsT2HTG5+AK6+Vy2cyV/uTd9bETm5JVew==
+hardhat-ethernal@^0.8.1:
+  version "0.8.1"
+  resolved "https://registry.yarnpkg.com/hardhat-ethernal/-/hardhat-ethernal-0.8.1.tgz#387326fe65689419bb480c1e2062486c3fb59bc0"
+  integrity sha512-GRYGzf+MdVTWa3QhfDY/Pfsc7rWKIvvuVz6x6jvdVteh6Q3BdhLmPiuMIy4a64t7wS0uJ03eAygTE19pF9yiqQ==
   dependencies:
     "@firebase/firestore-types" "2.2.0"
     configstore "5.0.1"
