@@ -187,10 +187,7 @@ contract CommownSW is
         bytes memory _data,
         uint256 _totalAmount,
         address[] memory _users,
-        uint256[] memory _sharePerUser,
-        address _nftAdrs,
-        uint256 _nftId,
-        uint256 _nftQtity
+        uint256[] memory _sharePerUser
     ) external isCommownOwner(msg.sender) {
         require(_users.length > 0, "owners required");
         require(_users.length == _sharePerUser.length, "length mismatch");
@@ -202,8 +199,6 @@ contract CommownSW is
             require(isOwner[_users[i]], "not an owner");
             sharePerUser[_pocketID][_users[i]] = _sharePerUser[i];
         }
-
-        items721[_pocketID][_nftAdrs][_nftId] = _nftQtity;
 
         emit ProposePocket(
             msg.sender,
@@ -217,11 +212,10 @@ contract CommownSW is
     }
 
     //Callable after a pocketSell
-    // function withdrawPocket(uint256 _pocketID, uint256 _sellPrice) private pocketExists(_pocketID) {
-    // 	//Alice 40
-    // 	//Bob 60
-    // 	//10 eth => 100 eth
-    // 	// A 40/(40+60) * sell amount et B 60/(40+60)
+    // function withdrawPocket(uint256 _pocketID, uint256 _sellPrice) private {
+
+    // 	//100 - 100*60/100 = 100 - 60 = 40
+    // 	//HEREEEEEEEEEEEEEEEEEEEEEE
     // 	uint256 totalWithdrawed;
     // 	uint256 toPay;
     // 	for(uint i;i<)
