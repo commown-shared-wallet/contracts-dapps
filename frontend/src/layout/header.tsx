@@ -14,7 +14,8 @@ import { Link } from "react-router-dom";
 import { BrandGithub } from "tabler-icons-react";
 
 /*
- * Wallet && Blockchain interaction */
+ * Wallet && Blockchain interaction
+ */
 import InjectedWalletConnection from "@components/InjectedWalletConnection";
 
 function headerLayout() {

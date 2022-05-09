@@ -3,11 +3,11 @@
  */
 import { Routes, Route } from "react-router-dom";
 
-/**
- * * Wallet && Blockchain interaction */
-import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core";
+/*
+ * * Wallet && Blockchain interaction
+ */
 
-/**
+/*
  * * Mantine UI Library
  */
 import {
