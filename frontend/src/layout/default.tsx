@@ -124,7 +124,7 @@ export default function Layout() {
         if (active) {
             try {
                 const address = await read(
-                    contract.address,
+                    contract ? contract.address : "",
                     "Retrieving CSWPF",
                     "Retrieving the smart contract CSWPFs",
                     "Unable to call the CSWPF of the contract"
