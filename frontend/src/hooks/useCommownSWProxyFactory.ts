@@ -3,12 +3,14 @@ import { useWeb3React } from "@web3-react/core";
 import { ethers } from "ethers";
 import { useNotifications } from "@mantine/notifications";
 import { CommownSWProxyFactory } from "@utils/getContract";
+import { CommownSWProxyFactory as ICSWPF } from "@contract-types/CommownSWProxyFactory";
+import { ContractTransaction } from "ethers";
 
 function useCommownSWProxyFactory() {
     /**Mantine */
     const notifications = useNotifications();
 
-    const [contract, setContract] = useState<ethers.Contract>();
+    const [contract, setContract] = useState<ICSWPF>();
     const context = useWeb3React();
     const { active, library: provider } = context;
 
@@ -22,7 +24,7 @@ function useCommownSWProxyFactory() {
                         CommownSWProxyFactory.abi,
                         signer
                     );
-                    setContract(instanceContract);
+                    setContract(instanceContract as ICSWPF);
                 }
             };
             charge();
@@ -30,7 +32,7 @@ function useCommownSWProxyFactory() {
     }, [provider]);
 
     async function write(
-        contract: Promise<any>,
+        contract: Promise<ContractTransaction> | string,
         name: String,
         message: string,
         errorMsg: string = ""
@@ -38,8 +40,7 @@ function useCommownSWProxyFactory() {
         const id = name.split(" ").join("");
         const title = name;
         try {
-            const transaction = await contract;
-            await transaction.wait();
+            await contract;
             notifications.showNotification({
                 id,
                 title,
@@ -61,14 +62,14 @@ function useCommownSWProxyFactory() {
     }
 
     async function read(
-        contract: Promise<any>,
+        contract: Promise<ContractTransaction> | string,
         name: String,
         message: string,
         errorMsg: string = ""
     ): Promise<any> {
         const id = name.split(" ").join("");
         const title = name;
-        let data: Promise<ethers.Contract>;
+        let data;
         try {
             data = await contract;
             notifications.showNotification({
