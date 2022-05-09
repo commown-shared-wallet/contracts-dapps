@@ -11,6 +11,7 @@ import {
     ContractFactory,
     ContractTransaction,
     ContractReceipt,
+	BigNumber,
 } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ERC1967Proxy, ERC1967Proxy__factory } from "../typechain";
@@ -41,7 +42,7 @@ let proxyCreated: ContractTransaction;
 let receipt: ContractReceipt;
 let proxyCreatedAddress: string;
 
-describe("02_CommownSW__01_deployementAndInitializer", function () {
+/* describe("02_CommownSW__01_deployementAndInitializer", function () {
     beforeEach(async function () {
         CommownSWProxyFactory = await ethers.getContractFactory(
             "CommownSWProxyFactory"
@@ -107,9 +108,9 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
 		expect(await CSWContract2.isOwner(addresses1[2])).to.be.false;
     });
 	
-});
+}); */
 
-/* describe("02_CommownSW__02_ReceiveAndWithdrawETH", function () {
+describe("02_CommownSW__02_ReceiveAndWithdrawETH", function () {
 	beforeEach(async function () {
         CommownSWProxyFactory = await ethers.getContractFactory(
             "CommownSWProxyFactory"
@@ -118,7 +119,7 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
         await CSWProxyFactoryContract.deployed();
 		expect(await CSWProxyFactoryContract.logic()).to.be.not.undefined;
 
-        [sign0, sign1] = await ethers.getSigners();
+        [sign0, sign1, sign2, sign3] = await ethers.getSigners();
 
 		proxyCreated = await CSWProxyFactoryContract.createProxy(addresses1, confirmation);
         receipt = await proxyCreated.wait();
@@ -132,13 +133,47 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
 		CSWContract = CommownSW.attach(proxyCreatedAddress);
     });
 	it("02__02-01: it receives ETH for a CSW owner, update his balance and update the global balance", async function () {
-		
+		let tx = {
+			to: CSWContract.address,
+			value: parseEther("1.0")
+		};
+		const receiptTx = await sign0.sendTransaction(tx);
+		await receiptTx.wait();
+
+		const balanceOfSign0 = await CSWContract.balancePerUser(sign0.address);
+		expect(balanceOfSign0).to.be.equal(parseEther("1.0"));
     });
 	it("02__02-02: it does not receive ETH for a non CSW owner, or 0 wei sent, balances remain unchange", async function () {
-		
+		//isCommownOwner
+		let tx = {
+			to: CSWContract.address,
+			value: parseEther("1.0")
+		};
+		await expect(
+			sign3.sendTransaction(tx)
+		).to.be.revertedWith("not an owner");
+
+		//msg.value=0
+		let tx2 = {
+			to: CSWContract.address,
+			value: parseEther("0")
+		};
+		await expect(
+			sign0.sendTransaction(tx2)
+		).to.be.revertedWith("value eq 0");
     });
 	it("02__02-03: it emits an event when receiving ETH", async function () {
-		
+		let tx = {
+			to: CSWContract.address,
+			value: parseEther("1.0")
+		};
+		let bn:BigNumber=parseEther("1.0");
+
+		await expect(await sign0.sendTransaction(tx)).to.emit(CSWContract, 'Deposit')
+		.withArgs(sign0.address, bn, bn, bn);
+
+		const balanceOfSign0 = await CSWContract.balancePerUser(sign0.address);
+		expect(balanceOfSign0).to.be.equal(bn);
     });
 	it("02__02-04: it withdraw ETH for a CSW owner and update balances", async function () {
 		 
@@ -149,10 +184,10 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
 	it("02__02-06: it emits an event when withdrawing ETH", async function () {
 		
     });
-}); */
+});
 
 
-describe("02_CommownSW__03_createPocket", function () {
+/* describe("02_CommownSW__03_createPocket", function () {
 	let addressTo: string;
 	let bytesData: string;
 	let totalAmount: number;
@@ -251,4 +286,4 @@ describe("02_CommownSW__03_createPocket", function () {
 		
 	});
 });
-
+ */
