@@ -23,6 +23,7 @@ interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
   functions: {
     "commownProxiesPerUser(address,uint256)": FunctionFragment;
     "createProxy(address[],uint8)": FunctionFragment;
+    "getCommownProxiesPerUser(address)": FunctionFragment;
     "logic()": FunctionFragment;
     "nbProxiesPerUser(address)": FunctionFragment;
     "proxiesList(uint256)": FunctionFragment;
@@ -35,6 +36,10 @@ interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "createProxy",
     values: [string[], BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCommownProxiesPerUser",
+    values: [string]
   ): string;
   encodeFunctionData(functionFragment: "logic", values?: undefined): string;
   encodeFunctionData(
@@ -52,6 +57,10 @@ interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "createProxy",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCommownProxiesPerUser",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "logic", data: BytesLike): Result;
@@ -129,6 +138,11 @@ export class CommownSWProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    getCommownProxiesPerUser(
+      addr: string,
+      overrides?: CallOverrides
+    ): Promise<[string[]]>;
+
     logic(overrides?: CallOverrides): Promise<[string]>;
 
     nbProxiesPerUser(
@@ -154,6 +168,11 @@ export class CommownSWProxyFactory extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  getCommownProxiesPerUser(
+    addr: string,
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
   logic(overrides?: CallOverrides): Promise<string>;
 
   nbProxiesPerUser(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -172,6 +191,11 @@ export class CommownSWProxyFactory extends BaseContract {
       _confirmationNeeded: BigNumberish,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    getCommownProxiesPerUser(
+      addr: string,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
 
     logic(overrides?: CallOverrides): Promise<string>;
 
@@ -206,6 +230,11 @@ export class CommownSWProxyFactory extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    getCommownProxiesPerUser(
+      addr: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     logic(overrides?: CallOverrides): Promise<BigNumber>;
 
     nbProxiesPerUser(
@@ -230,6 +259,11 @@ export class CommownSWProxyFactory extends BaseContract {
       _owners: string[],
       _confirmationNeeded: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getCommownProxiesPerUser(
+      addr: string,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     logic(overrides?: CallOverrides): Promise<PopulatedTransaction>;
