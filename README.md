@@ -70,7 +70,6 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 `├──` [`docs`](./docs) — Contracts documentations <br>
 `├──` [`scripts`](./scripts) — Script to deploy contracts <br>
 `├──` [`test`](./test) — Script to test contracts <br>
-`├──` [`typechain`](./typechain) — Type declaration files for Contracts <br>
 `├──` [`frontend`](./frontend) — dapp frontend <br>
 `├────` [`artifacts`](./frontend/artifacts) — compiled artifacts (build-inf, abi...) <br>
 `├────` [`src`](./frontend/src) — react component frontend <br>
@@ -81,6 +80,7 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 `├──────` [`pages`](./frontend//src/pages) — Pages of applications<br>
 `├──────` [`App.tsx`](./frontend//src/App.tsx) — App Container and Routes<br>
 `├──────` [`main.tsx`](./frontend//src/main.tsx) — Inject app in index.html<br>
+`├────` [`types`](./frontend/types) — Type declaration files for Contracts <br>  
 `├────` [`index.html`](./frontend//index.html) — Application entry point<br>
 
 ## Tech Stack <a name="tech-stack"></a>
@@ -126,8 +126,8 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 -   `npx hardhat coverage` — Check the percentage of tests coverage
 -   `npx hardhat clean` — Clears the cache a nd deletes all artifacts
 -   `npx hardhat help` — Prints this message
--   `npx hardhat run scripts/deployVoting.ts --network localhost` — Deploy smart contract to local network
--   `npx hardhat run scripts/deployVoting.ts --network rinkeby` — Deploy smart contract to testnet network
+-   `npx hardhat run scripts/01_deployFromOZPlugin.ts --network localhost` — Deploy smart contract to local network
+-   `npx hardhat run scripts/01_deployFromOZPlugin.ts --network rinkeby` — Deploy smart contract to testnet network
 -   `TS_NODE_FILES=true npx ts-node scripts/deploy.ts` —
 
 #### Linter
