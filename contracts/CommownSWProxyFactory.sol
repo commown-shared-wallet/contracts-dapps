@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "./CommownSW.sol";
 
 contract CommownSWProxyFactory {
-    event ProxyCreated(address indexed adrs);
+    event ProxyCreated(address indexed adrs, address[] owners);
 
     address public immutable logic;
 
@@ -36,15 +36,7 @@ contract CommownSWProxyFactory {
             nbProxiesPerUser[_owners[i]] += 1;
         }
 
-        emit ProxyCreated(address(proxy));
+        emit ProxyCreated(address(proxy), _owners);
         return address(proxy);
-    }
-
-    function getCommownProxiesPerUser(address addr)
-        public
-        view
-        returns (address[] memory)
-    {
-        return commownProxiesPerUser[addr];
     }
 }
