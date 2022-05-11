@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "./CommownSW.sol";
 
 /// @title Commown Shared Wallet Proxy Factory
-/// @author Aurélien ALBE 😎
+/// @author Aurélien ALBE - Younès MANGAL 😎
 /// @notice Proxy factory contract for creation of a Commown Shared Wallet
 /// @dev Proxy factory contract. State variables stored in the proxy. Logic will be in the Commown Shared Wallet contract.
 /// @dev test new ligne

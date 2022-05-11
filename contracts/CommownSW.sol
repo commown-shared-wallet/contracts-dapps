@@ -6,20 +6,54 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
+/// @title Commown Shared Wallet
+/// @author Aurélien ALBE - Younès MANGAL 😎
+/// @notice Main logic contract : Commown Shared Wallet
+/// @dev Main logic contract : Commown Shared Wallet. That contract upgradeable follows the UUPS OZ standard and rules.
+/// @dev Initializable : that function is called while the proxy creation
+/// @dev UUPSUpgradeable : upgradeable pattern
+/// @dev OwnableUpgradeable : to use the Ownable function while being upgradeable
+/// @dev IERC721Receiver : to ensure that contract can hande safeTransferFrom ERC721
 contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver  {
-	//IER1155
-	//IERC721
-	//ERC1155Receiver
-	//ERC721Receiver
 
+	/// @notice Emitted when a CommownSharedWallet is created
+	/// @dev Emitted when a CSW is created, creator is indexed
+	/// @param creator address of the creator
+	/// @param owners addresses of the CSW owners
+	/// @param confirmationNeeded number of signatures required
 	event WalletCreated(address indexed creator, address[] owners, uint256 confirmationNeeded);
+
+	/// @notice Emitted when deposit eth in the CSW
+	/// @dev Emitted when deposit eth in the CSW, sender is indexed
+	/// @param sender msg.sender emitting the deposit
+	/// @param amount amount just deposited
+	/// @param userBalance userBalance updated with deposit amount
+	/// @param balance updated of the CSW
 	event Deposit(address indexed sender, uint256 amount, uint256 userBalance, uint256 balance);
+	
+	/// @notice Emitted when withdrawing eth from the CSW
+	/// @dev Emitted when withdrawing eth from the CSW, sender is indexed
+	/// @param sender msg.sender emitting the withdrawal
+	/// @param amount amount just withdrawed
+	/// @param userBalance userBalance updated with withdraw amount
+	/// @param balance updated of the CSW
 	event Withdraw(address indexed sender, uint256 amount, uint256 userBalance, uint256 balance);
-	event ProposePocket(address indexed sender, uint256 pocketID, address to, bytes data, PocketStatus,  uint256 totalAmount, uint[] sharePerUser);
+	
+	/// @notice Emitted when creating a pocket for an investment purpose
+	/// @dev Emitted when creating a pocket for an investment purpose, sender is indexed
+	/// @param sender msg.sender emitting the proposal
+	/// @param pocketID the ID of the pocket created
+	/// @param to destination address for the futur transaction
+	/// @param data of the futur transaction, that's the data which will be called on chain
+	/// @param pStatus of the pocket created
+	/// @param totalAmount to reach for that pocket before doing the transaction
+	/// @param sharePerUser is the sharing of the futur investment. That is the sharing which will be used when taking profit and determine which amount is destinated to whom
+	event ProposePocket(address indexed sender, uint256 pocketID, address to, bytes data, PocketStatus pStatus, uint256 totalAmount, uint[] sharePerUser);
 
     //Constant can be inizialized even with Proxies
     string public constant VERSION = "0.0.1";
  
+	//Status of the pocket
 	enum PocketStatus {
 		Proposed,
 		Signing,
