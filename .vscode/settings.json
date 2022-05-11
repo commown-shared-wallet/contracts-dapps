@@ -1,5 +1,9 @@
 {
-  "fileNestingUpdater.autoUpdate": true,
-  "fileNestingUpdater.autoUpdateInterval": 720,
-  "fileNestingUpdater.promptOnAutoUpdate": true
+    "fileNestingUpdater.autoUpdate": true,
+    "fileNestingUpdater.autoUpdateInterval": 720,
+    "fileNestingUpdater.promptOnAutoUpdate": true,
+    "explorer.fileNesting.patterns": {
+        "package.json": ".validate-branch-namerc.js,git-precommit-checks.config.js, .commitlint*, .eslint*, .github*, .huskyrc*, .mocha*, .node-version, .nodemon*, .npm*, .nvmrc,.pnpm*, .prettier*, .releaserc*, .sentry*, .versionrc*, .vscode*,  .yarnrc*, apollo.config.*, appveyor*, ava.config.*, azure-pipelines*, bower.json, build.config.*, commitlint*, crowdin*, cypress.json, dangerfile*, dprint.json, firebase.json, grunt*, gulp*, jasmine.*, jenkins*, jest.config.*, jsconfig.*, karma*, lerna*, lighthouserc.*, lint-staged*, nest-cli.*, netlify*, nodemon*, nx.*, package-lock.json, pnpm*, prettier*, pullapprove*, puppeteer.config.*, renovate*, rollup.config.*, tsconfig.*, tsdoc.*, tslint*, turbo*, typedoc*, vercel*, vitest.config.*, webpack.config.*, workspace.json, yarn*",
+        "hardhat.config.ts": ".solhint.json,.solhintignore, coverage.json"
+    }
 }
