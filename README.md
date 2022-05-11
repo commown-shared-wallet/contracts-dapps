@@ -75,7 +75,8 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 `├────` [`src`](./frontend/src) — react component frontend <br>
 `├──────` [`assets`](./frontend/src/assets) — Assets such as css, sass, img files<br>
 `├──────` [`components`](./frontend/src/components) — Reusable components for pages and layout<br>
-`├──────` [`hooks`](./frontend/src/hooks) — React hooks such as `UseContract`, etc.<br>
+`├──────` [`hooks`](./frontend/src/hooks) — React hooks such as `useCommownSW`, `useCopy`, etc.<br>
+`├──────` [`interface`](./frontend/src/interfaces) — Objects description.<br>
 `├──────` [`layout`](./frontend//src/layout) — Reusable page templates<br>
 `├──────` [`pages`](./frontend//src/pages) — Pages of applications<br>
 `├──────` [`App.tsx`](./frontend//src/App.tsx) — App Container and Routes<br>

@@ -19,8 +19,9 @@
         "paths": {
             "@contract/*": ["../artifacts/contracts/*"],
             "@components/*": ["./components/*"],
-            "@hooks/*": ["./hooks/*"],
             "@layout/*": ["./layout/*"],
+            "@hooks/*": ["./hooks/*"],
+            "@interfaces/*": ["./interfaces/*"],
             "@pages/*": ["./pages/*"],
             "@utils/*": ["./utils/*"],
             "@contract-types/*": ["../types/*"]
