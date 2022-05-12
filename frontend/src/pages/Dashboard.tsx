@@ -16,7 +16,6 @@ import {
     Avatar,
     Button,
     Paper,
-    Table,
     Title,
     Badge,
     Grid,
