@@ -29,7 +29,7 @@ import { CircleCheck, ListCheck, Plus, Trash, User } from "tabler-icons-react";
  * *  Wallet && Blockchain interaction
  */
 import { useWeb3React } from "@web3-react/core";
-import InjectedWalletConnection from "@components/InjectedWalletConnection";
+import InjectedWalletConnection from "@components/BrowserWalletConnection";
 import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
 
 function CreateSharedWallet() {
@@ -67,7 +67,7 @@ function CreateSharedWallet() {
                     form.values.users.map((user) => user.useraddress)
                 );
                 console.log(usersAddress);
-                const proxy = await write(
+                await write(
                     contract ? contract.createProxy(usersAddress, 1) : "",
                     "Shared Wallet Deployment",
                     "Deploy a proxy for the users of this shared wallet",

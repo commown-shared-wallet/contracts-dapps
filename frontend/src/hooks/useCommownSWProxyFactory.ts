@@ -17,7 +17,7 @@ function useCommownSWProxyFactory() {
     useEffect(() => {
         (async function () {
             const charge = async () => {
-                if (active) {
+                if (active && CommownSWProxyFactory.hardhat) {
                     const signer = provider.getSigner();
                     const instanceContract = new ethers.Contract(
                         CommownSWProxyFactory.hardhat,
