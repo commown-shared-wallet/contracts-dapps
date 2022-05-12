@@ -53,8 +53,8 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 | :------------------------------------------------------------------------------------: | ---------------------------------------------- | :----: |
 | [v1.0.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.0.0) | 🛠️ Settings & Technicals Environnement         |   ✅   |
 | [v1.1.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.1.0) | 👛 Connecting to a wallet                      |   ✅   |
-| [v1.2.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.2.0) | 📦 Creating a CommOwn Shared Wallet and Pocket |   🔁   |
-| [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Funds management & NFT proposals            |   🔁   |
+| [v1.2.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.2.0) | 📦 Creating a CommOwn Shared Wallet & Funds management |   🔁   |
+| [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Pocket & NFT proposals            |   🔁   |
 | [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 Visualize your assets (Dashboard)           |   🔁   |
 |   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                          |   🚧   |
 |   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 Resale of NFT                             |   🚧   |
