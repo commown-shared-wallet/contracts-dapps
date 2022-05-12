@@ -4,9 +4,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useCommownSW } from "@hooks/useCommownSW";
 import { useCopy } from "@hooks/useCopy";
+import { IUsersCSW } from "@interfaces/events";
 import { ellipsisAddress } from "@utils/pipes";
 import { SnippetAccordion } from "@components/SnippetAccordion";
-import { IUsersCSW } from "@interfaces/events";
 
 /*
  * * Mantine UI Library
@@ -16,7 +16,6 @@ import {
     Avatar,
     Button,
     Paper,
-    Table,
     Title,
     Badge,
     Grid,
