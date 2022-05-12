@@ -126,7 +126,7 @@ export default function Layout() {
                 const address = await read(
                     contract ? contract.address : "",
                     "Retrieving CSWPF",
-                    "Retrieving the smart contract CSWPFs",
+                    "Retrieving the smart contract ",
                     "Unable to call the CSWPF of the contract"
                 );
                 setProxyContract(address);
@@ -161,7 +161,7 @@ export default function Layout() {
                 navbar={
                     <Navbar
                         height={800}
-                        width={{ sm: 300 }}
+                        width={{ sm: 200 }}
                         p="md"
                         className={classes.navbar}
                     >
