@@ -8,7 +8,6 @@ import "./CommownSW.sol";
 /// @author Aurélien ALBE - Younès MANGAL 😎
 /// @notice Proxy factory contract for creation of a Commown Shared Wallet
 /// @dev Proxy factory contract. State variables stored in the proxy. Logic will be in the Commown Shared Wallet contract.
-/// @dev test new ligne
 contract CommownSWProxyFactory {
 
 	/// @notice Emitted when a proxy is created

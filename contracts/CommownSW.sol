@@ -9,11 +9,12 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 /// @title Commown Shared Wallet
 /// @author Aurélien ALBE - Younès MANGAL 😎
 /// @notice Main logic contract : Commown Shared Wallet
-/// @dev Main logic contract : Commown Shared Wallet. That contract upgradeable follows the UUPS OZ standard and rules.
-/// @dev Initializable : that function is called while the proxy creation
-/// @dev UUPSUpgradeable : upgradeable pattern
-/// @dev OwnableUpgradeable : to use the Ownable function while being upgradeable
-/// @dev IERC721Receiver : to ensure that contract can hande safeTransferFrom ERC721
+/** @dev Main logic contract : Commown Shared Wallet. That contract upgradeable follows the UUPS OZ standard and rules.
+	- Initializable : that function is called while the proxy creation
+	- UUPSUpgradeable : upgradeable pattern
+	- OwnableUpgradeable : to use the Ownable function while being upgradeable
+	- IERC721Receiver : to ensure that contract can hande safeTransferFrom ERC721
+*/
 contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC721Receiver  {
 
 	/// @notice Emitted when a CommownSharedWallet is created
@@ -52,7 +53,29 @@ contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC72
 
     //Constant can be inizialized even with Proxies
     string public constant VERSION = "0.0.1";
- 
+
+	/// @notice Owners list of the CommownSharedWallet
+	/// @dev Only owners can transmit decision point though pockets or votes or via "transaction something"
+	address[] public owners;
+	
+	/// @dev Utility mapping to check if an address is owner of that CSW
+	mapping(address => bool) public isOwner;
+
+	/// @notice Number of signatures from owners required to sign a transaction
+	/// @dev As the number of wallet is limited to uint8, number of confirmationNeeded follows that type
+	uint8 public confirmationNeeded;
+
+	/// @notice Total of ethers already withdrawed
+	/// @dev to keep ?
+	uint256 public globalTotalWithdrawed;
+
+	/// @notice Balance in Wei per User
+	mapping(address => uint256) public balancePerUser;
+
+	/// @notice Amount of withdrawed ethers per user
+	/// @dev to keep ?
+	mapping(address => uint256) public globalWithdrawPerUser; 
+
 	//Status of the pocket
 	enum PocketStatus {
 		Proposed,
@@ -60,34 +83,32 @@ contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC72
 		Executed
 	}
 
-
+	/// @notice This is the pocket representing an act of investment or selling. Eg : I want to buy an NFT
+	/// @dev Pocket is the main struct representing an act of investment and evolve in function of the status PocketStatus
 	struct Pocket {
 		address to; //To whom the pocket will be buy
 		bytes data; //Data on chain representing the transaction
 		PocketStatus pStatus; //Status of the pocket
 		uint256 totalAmount; //Total amount to reach
     }
+	/// @dev pockets list, usefull to get the id
 	Pocket[] public pockets;
-	mapping(uint256 => mapping(address => bool)) public isSigned; //poketID => commownSW owner => bool
-    mapping(uint256 => mapping(address => uint256)) public sharePerUser; //poketID => commownSW owner => Share per user
-	mapping(uint256 => mapping(address => mapping (uint256 => uint256))) public items721; //poketID => ERC721 => ID => Quantity
+	
+	/// @notice indicate if the owner x has signed the pocket ID y
+	/// @dev mapping of poketID => commownSW owner => bool
+	mapping(uint256 => mapping(address => bool)) public isSigned;
+
+    /// @notice indicate the share per user for the pocket ID x.
+	/// @dev mapping of poketID => commownSW owner => Share per user
+	mapping(uint256 => mapping(address => uint256)) public sharePerUser;
+	
+	/// @notice indicate the NFT the owners willing to buy or bought
+	/// @dev mapping of poketID => ERC721 address => ID of the NFT => Quantity (that last categories is for bundles of NFT)
+	mapping(uint256 => mapping(address => mapping (uint256 => uint256))) public items721;
+	
 	//mapping(uint256 => mapping(address => uint256)) items20; //poketID => ERC20 => amount
     //mapping(uint256 => mapping(address => mapping(uint256 => uint256))) items1155; //poketID => ERC1155 => ID => amount   
 	
-
-	//Component of a CommownWallet : List of owners of the contract, only those can call some of the functions
-	address[] public owners; 
-	mapping(address => bool) public isOwner;
-	uint8 public confirmationNeeded;
-
-
-	//Global Balance
-	uint256 public globalTotalWithdrawed; //Total of ethers already withdrawed
-	mapping(address => uint256) public balancePerUser; //Balance in Wei per User
-	mapping(address => uint256) public globalWithdrawPerUser; //Amount of withdrawed ethers per user
-
-
-
 
 	modifier isCommownOwner(address _sender){
 		require(isOwner[_sender],"not an owner");
@@ -105,20 +126,28 @@ contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC72
 	}
 
 	
-    /// @dev : function initialize
+    /** @dev : Initialize function is called by the proxy factory.
+	* This is the "constructor" of the CS.
+	* The "initializer" modifier guarantees that this function is only called once.
+	* It calls the initialize of dependencies first, and then does the logic for the CSW.
+	* Emit the WalletCreated event
+	*/
+	/// @param _owners is the owners list of the CommownSharedWallet to create
+	/// @param _confirmationNeeded is the number of signatures from owners required to sign a transaction
     function initialize(address[] memory _owners, uint8 _confirmationNeeded) public initializer {
 		require(_owners.length > 0, "owners required");
-		require(_confirmationNeeded > 0 && _confirmationNeeded<= _owners.length, "confirmation number invalid");
+		require(_confirmationNeeded > 0 && _confirmationNeeded<= _owners.length, "invalid confirmation number");
 		
 		__Ownable_init();
         __UUPSUpgradeable_init();
 
+		//For each owner...
 		for(uint i;i<_owners.length; i++){
-			require(_owners[i] != address(0),"owner is address(0)");
-			require(!isOwner[_owners[i]],"owner is already listed");
+			require(_owners[i] != address(0),"owner is address(0)"); //Not the 0 address
+			require(!isOwner[_owners[i]],"owner is already listed"); //Not in double
 
-			owners.push(_owners[i]);
-			isOwner[_owners[i]] = true;
+			owners.push(_owners[i]); //Add to the list of owners
+			isOwner[_owners[i]] = true; //Add in the helper mapping
 		}
 
 		confirmationNeeded = _confirmationNeeded;
@@ -128,13 +157,16 @@ contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC72
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() initializer {}
 
+	/// @dev To authorize the owner to upgrade the contract, it implements _authorizeUpgrade with the onlyOwner modifier. Better to use with the OZ plugins
     function _authorizeUpgrade(address newImplementation) internal override onlyOwner {}
 
+	/// @dev to ensure the safe transfer from methods that our CSW can handle NFT and thus, they wont be stuck for ever
 	function onERC721Received(address, address, uint256, bytes memory) public virtual override returns (bytes4) {
     	return this.onERC721Received.selector;
     }
 
-	//Owners can send ethers, a contract, a sell can send ethers...
+	/// @notice Payable function to deposit some ethers if you are a CommownSharedWallet owner.
+	/// @dev A Commown owner can send ethers to that contract, it requires the amount is > 0 and updates the user balance
 	receive() external payable isCommownOwner(msg.sender) {
 		require(msg.value>0,"value eq 0");
 		balancePerUser[msg.sender] += msg.value;
@@ -142,19 +174,25 @@ contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC72
 	}
 
 	/// @notice Withdraw ETH from the CommownSharedWallet. Has to be a CommownShareWallet owner.
-	/// @dev Withdraw an _amount in wei from the CommownSharedWallet. Has to be a CommownShareWallet owner. 
+	/** @dev Withdraw an _amount in wei from the CommownSharedWallet.
+	* Has to be a CommownShareWallet owner. Reentrance guarded.
+	* Requires the user's balance is > 0, the _amount is > 0 but less than the user's balance
+	* Reentrancy pattern avoided : 
+	*	- Update of the balance before sending eth
+	* 	- Test the success of the transaction and revert if the transaction failed        
+	*/
 	/// @param _amount of ETH to withdraw
 	function withdraw(uint256 _amount) public isCommownOwner(msg.sender){
-		require(balancePerUser[msg.sender]>0,"balance eq 0");
+		require(balancePerUser[msg.sender]>0,"balance eq 0"); //Todo : virer ce require
 		require(_amount>0,"amount eq 0");
 		require(_amount<=balancePerUser[msg.sender],"too big amount");
 
-		balancePerUser[msg.sender] -= _amount;
+		balancePerUser[msg.sender] -= _amount; //Update the amount before the transaction is called to avoid reentrancy attack
 		
 		(bool success,) = payable(msg.sender).call{value:_amount}("");
-		require(success,"transaction failed");
+		require(success,"transaction failed"); //Require the transactoin success or revert
 		
-		emit Withdraw(msg.sender, _amount, balancePerUser[msg.sender], address(this).balance);
+		emit Withdraw(msg.sender, _amount, balancePerUser[msg.sender], address(this).balance); //Emit the event
 	}
 
 	// signPocket
@@ -167,22 +205,34 @@ contract CommownSW is Initializable, UUPSUpgradeable, OwnableUpgradeable, IERC72
 	// withDrawGlobal
 	// allMethodForERC721
 
-	
+	/// @notice propose a pocket of investment for exemple to buy a NFT.
+	/// @dev This is the main tool of that CSW. The address of the NFT contract, the NFT's ID and the amount to reach before buying are required
+	/// @param _to address to which will be called once the amount of the pocket is reach and once the signatures are acquired
+	/// @param _data data bytes which will be called once the amount of the pocket is reach and once the signatures are acquired
+	/// @param _totalAmount uint256 amount to reach to process the futur transaction
+	/// @param _users addresses of the owners. It is used in consort with the _sharePerUser to ensure the share for each user is well define
+	/// @param _sharePerUser uint256 share per users of the pocket. That share property will be used to determine which amount is delivered to which address once a sell happens.
+	/// @param _nftAdrs address of the NFT contract
+	/// @param _nftId uint256 ID of the NFT
+	/// @param _nftQtity uint256 quantity of the NFT
+	/// @return Documents the return variables of a contract’s function state variable
+	/// @inheritdoc	Copies all missing tags from the base function (must be followed by the contract name)
 	function proposePocket(address _to, bytes memory _data, uint256 _totalAmount, address[] memory _users, uint256[] memory _sharePerUser, address _nftAdrs, uint256 _nftId, uint256 _nftQtity) external isCommownOwner(msg.sender){
 		require(_users.length > 0, "owners required");
 		require(_users.length == _sharePerUser.length, "length mismatch");
 				
-		uint256 _pocketID = pockets.length;
-        pockets.push(Pocket(_to,_data,PocketStatus.Proposed,_totalAmount));
+		uint256 _pocketID = pockets.length; //ID of the pocket
+        pockets.push(Pocket(_to,_data,PocketStatus.Proposed,_totalAmount)); //Push the new pocket to the list
         
+		//For each user
 		for(uint8 i;i<_users.length;i++){
-			require(isOwner[_users[i]],"not an owner");
-			sharePerUser[_pocketID][_users[i]]=_sharePerUser[i];
+			require(isOwner[_users[i]],"not an owner"); //Revert if not a user
+			sharePerUser[_pocketID][_users[i]]=_sharePerUser[i]; //Define the share for that user
 		}
 		
-		items721[_pocketID][_nftAdrs][_nftId]=_nftQtity;
+		items721[_pocketID][_nftAdrs][_nftId]=_nftQtity; //Insert the NFT property which will be buy
 
-		emit ProposePocket(msg.sender, _pocketID, _to, _data, PocketStatus.Proposed, _totalAmount, _sharePerUser);
+		emit ProposePocket(msg.sender, _pocketID, _to, _data, PocketStatus.Proposed, _totalAmount, _sharePerUser); //Emit the event
 	}
 
 
