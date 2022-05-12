@@ -29,7 +29,7 @@ import { CircleCheck, ListCheck, Plus, Trash, User } from "tabler-icons-react";
  * *  Wallet && Blockchain interaction
  */
 import { useWeb3React } from "@web3-react/core";
-import InjectedWalletConnection from "@components/InjectedWalletConnection";
+import InjectedWalletConnection from "@components/BrowserWalletConnection";
 import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
 
 function CreateSharedWallet() {
