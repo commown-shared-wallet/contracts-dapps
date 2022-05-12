@@ -3,11 +3,11 @@
  */
 import { Routes, Route } from "react-router-dom";
 
-/**
- * * Wallet && Blockchain interaction */
-import { useWeb3React, UnsupportedChainIdError } from "@web3-react/core";
+/*
+ * * Wallet && Blockchain interaction
+ */
 
-/**
+/*
  * * Mantine UI Library
  */
 import {
@@ -27,6 +27,7 @@ import Home from "@pages/Home";
 import BalancesCoins from "@pages/BalancesCoins";
 import BalancesNFT from "@pages/BalancesNFT";
 import AssetsProposals from "@pages/AssetsProposals";
+import Dashboard from "@pages/Dashboard";
 import CreateSharedWallet from "@pages/CreateSW";
 
 function App() {
@@ -52,10 +53,7 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route element={<Layout />}>
-                            <Route
-                                path="/wallet/*"
-                                element={<CreateSharedWallet />}
-                            />
+                            <Route path="/wallet/*" element={<Dashboard />} />
                             <Route
                                 path="/wallet/create-shared-wallet"
                                 element={<CreateSharedWallet />}

@@ -108,34 +108,34 @@ export default function Layout() {
 
     // Connect to wallet
     const context = useWeb3React();
-    const { library: provider, account, active } = context;
+    const { account, active } = context;
 
     /* Contract Value */
-    const [owner, setOwner] = useState(null);
+    const [proxyContract, setProxyContract] = useState(null);
     const [contract, , read] = useCommownSWProxyFactory();
 
     useEffect(() => {
-        getOwners();
-        return () => setOwner(null);
+        getProxyContract();
+        return () => setProxyContract(null);
     }, [contract]);
 
-    //Get Owners of contract
-    async function getOwners() {
+    //Get address of contract
+    async function getProxyContract() {
         if (active) {
             try {
-                const owner = await read(
-                    contract?.owner(),
-                    "Retrieving Owner",
-                    "Retrieving the smart contract Owners",
-                    "Unable to call the owner of the contract"
+                const address = await read(
+                    contract ? contract.address : "",
+                    "Retrieving CSWPF",
+                    "Retrieving the smart contract ",
+                    "Unable to call the CSWPF of the contract"
                 );
-                setOwner(owner);
-                hideNotification("erorrFetchOwner");
+                setProxyContract(address);
+                hideNotification("erorrFetchCSWPF");
             } catch (e) {
                 //const message =
                 notifications.showNotification({
-                    id: "erorrFetchOwner",
-                    title: "Erorr fetching Owner ",
+                    id: "erorrFetchCSWPF",
+                    title: "Erorr fetching CSWPF ",
                     color: "red",
                     message: `Unable to call promise : ${e}`,
                 });
@@ -161,7 +161,7 @@ export default function Layout() {
                 navbar={
                     <Navbar
                         height={800}
-                        width={{ sm: 300 }}
+                        width={{ sm: 200 }}
                         p="md"
                         className={classes.navbar}
                     >
@@ -188,6 +188,7 @@ export default function Layout() {
                         style={{
                             display: "flex",
                             justifyContent: "space-evenly",
+                            flexWrap: "wrap",
                         }}
                         height={60}
                         p="md"
@@ -198,8 +199,8 @@ export default function Layout() {
                         </Text>
 
                         <Text size="md" transform="capitalize">
-                            <b>Owner: </b>
-                            {owner}
+                            <b>CSW Proxy Factory : </b>
+                            {proxyContract}
                         </Text>
                     </Footer>
                 }

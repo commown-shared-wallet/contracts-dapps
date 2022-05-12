@@ -8,7 +8,7 @@ import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-solhint";
 import "@openzeppelin/hardhat-upgrades";
 import "hardhat-gas-reporter";
-import "hardhat-ethernal";
+//import "hardhat-ethernal";
 import "solidity-coverage";
 import "hardhat-deploy";
 import "hardhat-docgen";
@@ -32,6 +32,12 @@ const config: HardhatUserConfig = {
     solidity: "0.8.13",
     paths: {
         artifacts: "./frontend/artifacts",
+    },
+    typechain: {
+        outDir: "frontend/types",
+        target: "ethers-v5",
+        alwaysGenerateOverloads: false, // should overloads with full signatures like deposit(uint256) be generated always, even if there are no overloads?
+        externalArtifacts: [], // optional array of glob patterns with external artifacts to process (for example external libs from node_modules)
     },
     networks: {
         rinkeby: {

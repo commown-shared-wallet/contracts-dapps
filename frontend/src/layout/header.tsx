@@ -14,8 +14,9 @@ import { Link } from "react-router-dom";
 import { BrandGithub } from "tabler-icons-react";
 
 /*
- * Wallet && Blockchain interaction */
-import InjectedWalletConnection from "@components/InjectedWalletConnection";
+ * Wallet && Blockchain interaction
+ */
+import InjectedWalletConnection from "@components/BrowserWalletConnection";
 
 function headerLayout() {
     /* Mantine Value */
@@ -82,7 +83,7 @@ function headerLayout() {
                     Wallet
                 </Text>
 
-                <InjectedWalletConnection />
+                <InjectedWalletConnection activeSwitch={true} />
                 <ActionIcon
                     component="a"
                     href="https://github.com/commown-shared-wallet/contracts-dapps"

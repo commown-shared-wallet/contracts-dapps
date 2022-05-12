@@ -22,7 +22,27 @@ contract CommownSW is
         address[] owners,
         uint256 confirmationNeeded
     );
-    event Deposit(address indexed sender, uint256 amount, uint256 balance);
+    event Deposit(
+        address indexed sender,
+        uint256 amount,
+        uint256 userBalance,
+        uint256 balance
+    );
+    event Withdraw(
+        address indexed sender,
+        uint256 amount,
+        uint256 userBalance,
+        uint256 balance
+    );
+    event ProposePocket(
+        address indexed sender,
+        uint256 pocketID,
+        address to,
+        bytes data,
+        PocketStatus,
+        uint256 totalAmount,
+        uint256[] sharePerUser
+    );
 
     //Constant can be inizialized even with Proxies
     string public constant VERSION = "0.0.1";
@@ -37,18 +57,15 @@ contract CommownSW is
         address to; //To whom the pocket will be buy
         bytes data; //Data on chain representing the transaction
         PocketStatus pStatus; //Status of the pocket
-        uint256 nbSign; //nb of sign of the pocket
-        uint256 currentAmount; //Current amount
         uint256 totalAmount; //Total amount to reach
-        uint256 totalWithdrawed; //Total amount already withdrawed
-        mapping(address => uint256) amountPerUser; //Share per user
-        mapping(address => uint256) withdrawPerUser; //Amount of withdrawed ethers per user
-        mapping(address => uint256) items20; //ERC20 => amount
-        mapping(address => mapping(uint256 => uint256)) items721; //ERC721 => ID => quantity
-        mapping(address => mapping(uint256 => uint256)) items1155; //ERC1155 => ID => amount
     }
     Pocket[] public pockets;
     mapping(uint256 => mapping(address => bool)) public isSigned; //poketID => commownSW owner => bool
+    mapping(uint256 => mapping(address => uint256)) public sharePerUser; //poketID => commownSW owner => Share per user
+    mapping(uint256 => mapping(address => mapping(uint256 => uint256)))
+        public items721; //poketID => ERC721 => ID => Quantity
+    //mapping(uint256 => mapping(address => uint256)) items20; //poketID => ERC20 => amount
+    //mapping(uint256 => mapping(address => mapping(uint256 => uint256))) items1155; //poketID => ERC1155 => ID => amount
 
     //Component of a CommownWallet : List of owners of the contract, only those can call some of the functions
     address[] public owners;
@@ -62,6 +79,19 @@ contract CommownSW is
 
     modifier isCommownOwner(address _sender) {
         require(isOwner[_sender], "not an owner");
+        _;
+    }
+
+    modifier pocketExists(uint256 _pocketID) {
+        require(_pocketID < pockets.length, "No such pocket exists");
+        _;
+    }
+
+    modifier pocketNotExecuted(uint256 _pocketID) {
+        require(
+            pockets[_pocketID].pStatus != PocketStatus.Executed,
+            "Pocket already executed"
+        );
         _;
     }
 
@@ -111,7 +141,96 @@ contract CommownSW is
 
     //Owners can send ethers, a contract, a sell can send ethers...
     receive() external payable isCommownOwner(msg.sender) {
+        require(msg.value > 0, "value eq 0");
         balancePerUser[msg.sender] += msg.value;
-        emit Deposit(msg.sender, msg.value, address(this).balance);
+        emit Deposit(
+            msg.sender,
+            msg.value,
+            balancePerUser[msg.sender],
+            address(this).balance
+        );
     }
+
+    /// @notice Withdraw ETH from the CommownSharedWallet. Has to be a CommownShareWallet owner.
+    /// @dev Withdraw an _amount in wei from the CommownSharedWallet. Has to be a CommownShareWallet owner.
+    /// @param _amount of ETH to withdraw
+    function withdraw(uint256 _amount) public isCommownOwner(msg.sender) {
+        require(balancePerUser[msg.sender] > 0, "balance eq 0");
+        require(_amount > 0, "amount eq 0");
+        require(_amount <= balancePerUser[msg.sender], "too big amount");
+
+        balancePerUser[msg.sender] -= _amount;
+
+        (bool success, ) = payable(msg.sender).call{value: _amount}("");
+        require(success, "transaction failed");
+
+        emit Withdraw(
+            msg.sender,
+            _amount,
+            balancePerUser[msg.sender],
+            address(this).balance
+        );
+    }
+
+    // signPocket
+    // fundPocket
+    // revokeFundPocket
+    // revokeSignPocket
+    // executePocket == buy
+    // sellPocket
+    // withdrawPocket
+    // withDrawGlobal
+    // allMethodForERC721
+
+    function proposePocket(
+        address _to,
+        bytes memory _data,
+        uint256 _totalAmount,
+        address[] memory _users,
+        uint256[] memory _sharePerUser,
+        address _nftAdrs,
+        uint256 _nftId,
+        uint256 _nftQtity
+    ) external isCommownOwner(msg.sender) {
+        require(_users.length > 0, "owners required");
+        require(_users.length == _sharePerUser.length, "length mismatch");
+
+        uint256 _pocketID = pockets.length;
+        pockets.push(Pocket(_to, _data, PocketStatus.Proposed, _totalAmount));
+
+        for (uint8 i; i < _users.length; i++) {
+            require(isOwner[_users[i]], "not an owner");
+            sharePerUser[_pocketID][_users[i]] = _sharePerUser[i];
+        }
+
+        items721[_pocketID][_nftAdrs][_nftId] = _nftQtity;
+
+        emit ProposePocket(
+            msg.sender,
+            _pocketID,
+            _to,
+            _data,
+            PocketStatus.Proposed,
+            _totalAmount,
+            _sharePerUser
+        );
+    }
+
+    //Callable after a pocketSell
+    // function withdrawPocket(uint256 _pocketID, uint256 _sellPrice) private pocketExists(_pocketID) {
+    // 	//Alice 40
+    // 	//Bob 60
+    // 	//10 eth => 100 eth
+    // 	// A 40/(40+60) * sell amount et B 60/(40+60)
+    // 	uint256 totalWithdrawed;
+    // 	uint256 toPay;
+    // 	for(uint i;i<)
+    // 		toPay = (totalWithdrawed + totalsharePerUser[_pocketID][msg.sender])
+
+    // 	uint256 toPay = ((address(this).balance + totalAlreadyWithdrawed) * sharePerUser[msg.sender]) / totalShares - withdrawPerUser[msg.sender];
+    // 	require(toPay>0,"Nothing to pay");
+
+    // 	totalAlreadyWithdrawed += toPay;
+    // 	withdrawPerUser[msg.sender] += toPay;
+    // }
 }

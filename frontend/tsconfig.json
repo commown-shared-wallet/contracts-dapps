@@ -17,12 +17,14 @@
         "jsx": "react-jsx",
         "baseUrl": "./src",
         "paths": {
+            "@contract/*": ["../artifacts/contracts/*"],
             "@components/*": ["./components/*"],
             "@layout/*": ["./layout/*"],
+            "@hooks/*": ["./hooks/*"],
+            "@interfaces/*": ["./interfaces/*"],
             "@pages/*": ["./pages/*"],
             "@utils/*": ["./utils/*"],
-            "@contract/*": ["../artifacts/contracts/*"],
-            "@hooks/*": ["./hooks/*"]
+            "@contract-types/*": ["../types/*"]
         }
     },
     "include": ["src"],
