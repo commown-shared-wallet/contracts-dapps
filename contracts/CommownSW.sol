@@ -268,8 +268,6 @@ contract CommownSW is
     /// @param _nftAdrs address of the NFT contract
     /// @param _nftId uint256 ID of the NFT
     /// @param _nftQtity uint256 quantity of the NFT
-    /// @return Documents the return variables of a contract’s function state variable
-    /// @inheritdoc	Copies all missing tags from the base function (must be followed by the contract name)
     function proposePocket(
         address _to,
         bytes memory _data,

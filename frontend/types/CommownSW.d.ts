@@ -232,7 +232,7 @@ export type ProposePocketEvent = TypedEvent<
     pocketID: BigNumber;
     to: string;
     data: string;
-    arg4: number;
+    pStatus: number;
     totalAmount: BigNumber;
     sharePerUser: BigNumber[];
   }
@@ -695,7 +695,7 @@ export class CommownSW extends BaseContract {
       pocketID?: null,
       to?: null,
       data?: null,
-      undefined?: null,
+      pStatus?: null,
       totalAmount?: null,
       sharePerUser?: null
     ): TypedEventFilter<
@@ -705,7 +705,7 @@ export class CommownSW extends BaseContract {
         pocketID: BigNumber;
         to: string;
         data: string;
-        arg4: number;
+        pStatus: number;
         totalAmount: BigNumber;
         sharePerUser: BigNumber[];
       }
@@ -716,7 +716,7 @@ export class CommownSW extends BaseContract {
       pocketID?: null,
       to?: null,
       data?: null,
-      undefined?: null,
+      pStatus?: null,
       totalAmount?: null,
       sharePerUser?: null
     ): TypedEventFilter<
@@ -726,7 +726,7 @@ export class CommownSW extends BaseContract {
         pocketID: BigNumber;
         to: string;
         data: string;
-        arg4: number;
+        pStatus: number;
         totalAmount: BigNumber;
         sharePerUser: BigNumber[];
       }

@@ -7,7 +7,7 @@ import "@nomiclabs/hardhat-ethers";
 import { ethers } from "hardhat";
 import CommownSWProxyFactoryJSON from "../frontend/artifacts/contracts/CommownSWProxyFactory.sol/CommownSWProxyFactory.json";
 import CommownSWJSON from "../frontend/artifacts/contracts/CommownSW.sol/CommownSW.json";
-import { CommownSWProxyFactoryInterface } from "../typechain/CommownSWProxyFactory";
+import { CommownSWProxyFactoryInterface } from "../frontend/types/CommownSWProxyFactory";
 import {
     Contract,
     ContractFactory,
