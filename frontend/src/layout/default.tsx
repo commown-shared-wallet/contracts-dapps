@@ -188,6 +188,7 @@ export default function Layout() {
                         style={{
                             display: "flex",
                             justifyContent: "space-evenly",
+                            flexWrap: "wrap",
                         }}
                         height={60}
                         p="md"
@@ -198,7 +199,7 @@ export default function Layout() {
                         </Text>
 
                         <Text size="md" transform="capitalize">
-                            <b>Proxy Contract Address: </b>
+                            <b>CSW Proxy Factory : </b>
                             {proxyContract}
                         </Text>
                     </Footer>
