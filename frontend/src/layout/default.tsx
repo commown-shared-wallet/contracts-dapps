@@ -9,9 +9,9 @@ import {
     useMantineTheme,
     Paper,
     Group,
-    Code,
     ScrollArea,
     createStyles,
+    Image,
 } from "@mantine/core";
 import {
     Notes,
@@ -30,6 +30,7 @@ import HeaderLayout from "@layout/header";
  */
 import { useWeb3React } from "@web3-react/core";
 import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
+import useContract from "@hooks/useContract";
 
 const mockdata = [
     { label: "Dashboard", icon: Gauge, link: "/wallet" },
@@ -42,6 +43,11 @@ const mockdata = [
         label: "NFT proposals",
         icon: PresentationAnalytics,
         link: "/wallet/assets-proposals",
+    },
+    {
+        label: "Create Pockets",
+        icon: FileAnalytics,
+        link: "/wallet/purchase-assets",
     },
     {
         label: "Assets",
@@ -112,7 +118,8 @@ export default function Layout() {
 
     /* Contract Value */
     const [proxyContract, setProxyContract] = useState(null);
-    const [contract, , read] = useCommownSWProxyFactory();
+    const [contract] = useCommownSWProxyFactory();
+    const [, read] = useContract();
 
     useEffect(() => {
         getProxyContract();
@@ -169,8 +176,8 @@ export default function Layout() {
                             <Group position="apart">
                                 <Text size="md" transform="capitalize">
                                     CSW
-                                </Text>{" "}
-                                <Code sx={{ fontWeight: 700 }}>v1.2.0</Code>
+                                </Text>
+                                <Image src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/younesmjl/b55df4a9fefbf1fe80fea5b7c336ff95/raw/commown-shared-wallet-contract-dapps-badges.json" />{" "}
                             </Group>
                         </Navbar.Section>
 
