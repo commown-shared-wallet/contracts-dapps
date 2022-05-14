@@ -375,7 +375,7 @@ function Dashboard() {
                                         type="number"
                                         error={
                                             depositAmount <= 0.1
-                                                ? "define an amount => 0.1"
+                                                ? "define an amount >= 0.1"
                                                 : ""
                                         }
                                         value={

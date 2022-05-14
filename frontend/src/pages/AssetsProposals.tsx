@@ -75,7 +75,7 @@ function AssetsProposals() {
                             >
                                 <Text weight={500}>Open SEA</Text>
                                 <Badge color="pink" variant="light">
-                                    Propose NFT
+                                    Classic
                                 </Badge>
                             </Group>
 
@@ -98,7 +98,7 @@ function AssetsProposals() {
                                 fullWidth
                                 style={{ marginTop: 14 }}
                             >
-                                Classic
+                                Propose NFT
                             </Button>
                         </Card>
                     </Grid.Col>
@@ -149,7 +149,7 @@ function AssetsProposals() {
                                 fullWidth
                                 style={{ marginTop: 14 }}
                             >
-                                Propose NFT{" "}
+                                Propose NFT
                             </Button>
                         </Card>
                     </Grid.Col>

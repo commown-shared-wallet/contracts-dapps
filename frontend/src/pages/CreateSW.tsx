@@ -1,7 +1,7 @@
 /*
  * * React Utils
  */
-import { useState, MouseEvent, useRef, useEffect, SetStateAction } from "react";
+import { useState, useRef, useEffect } from "react";
 
 /*
  * * Mantine UI Library
@@ -18,7 +18,6 @@ import {
     ActionIcon,
     Box,
     Text,
-    Code,
     Title,
     useAccordionState,
     useMantineTheme,
@@ -31,6 +30,7 @@ import { CircleCheck, ListCheck, Plus, Trash, User } from "tabler-icons-react";
 import { useWeb3React } from "@web3-react/core";
 import InjectedWalletConnection from "@components/BrowserWalletConnection";
 import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
+import useContract from "@hooks/useContract";
 
 function CreateSharedWallet() {
     /* React */
@@ -40,7 +40,8 @@ function CreateSharedWallet() {
     /* Web3 */
     const context = useWeb3React();
     const { active, library: provider, account } = context;
-    const [contract, write] = useCommownSWProxyFactory();
+    const [contract] = useCommownSWProxyFactory();
+    const [write] = useContract();
 
     /*State*/
     const [netWorkName, setNetworkName] = useState("Hardhat");
