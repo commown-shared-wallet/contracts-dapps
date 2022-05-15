@@ -119,6 +119,8 @@ contract CommownSW is
     }
     /// @dev pockets list, usefull to get the id
     Pocket[] public pockets;
+	uint256 public pocketMaxID;
+
 
     /// @notice indicate if the owner x has signed the pocket ID y
     /// @dev mapping of poketID => commownSW owner => bool
@@ -130,8 +132,7 @@ contract CommownSW is
 
     /// @notice indicate the NFT the owners willing to buy or bought
     /// @dev mapping of poketID => ERC721 address => ID of the NFT => Quantity (that last categories is for bundles of NFT)
-    mapping(uint256 => mapping(address => mapping(uint256 => uint256)))
-        public items721;
+    mapping(uint256 => mapping(address => mapping(uint256 => uint256))) public items721;
 
     //mapping(uint256 => mapping(address => uint256)) items20; //poketID => ERC20 => amount
     //mapping(uint256 => mapping(address => mapping(uint256 => uint256))) items1155; //poketID => ERC1155 => ID => amount
@@ -281,20 +282,20 @@ contract CommownSW is
         require(_users.length > 0, "owners required");
         require(_users.length == _sharePerUser.length, "length mismatch");
 
-        uint256 _pocketID = pockets.length; //ID of the pocket
+        pocketMaxID = pockets.length; //ID of the pocket
         pockets.push(Pocket(_to, _data, PocketStatus.Proposed, _totalAmount)); //Push the new pocket to the list
 
         //For each user
         for (uint8 i; i < _users.length; i++) {
             require(isOwner[_users[i]], "not an owner"); //Revert if not a user
-            sharePerUser[_pocketID][_users[i]] = _sharePerUser[i]; //Define the share for that user
+            sharePerUser[pocketMaxID][_users[i]] = _sharePerUser[i]; //Define the share for that user
         }
 
-        items721[_pocketID][_nftAdrs][_nftId] = _nftQtity; //Insert the NFT property which will be buy
+        items721[pocketMaxID][_nftAdrs][_nftId] = _nftQtity; //Insert the NFT property which will be buy
 
         emit ProposePocket(
             msg.sender,
-            _pocketID,
+            pocketMaxID,
             _to,
             _data,
             PocketStatus.Proposed,
