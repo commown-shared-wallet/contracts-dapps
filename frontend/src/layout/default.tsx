@@ -45,7 +45,7 @@ const mockdata = [
         link: "/wallet/assets-proposals",
     },
     {
-        label: "Create Pockets",
+        label: "Purchase NFT",
         icon: FileAnalytics,
         link: "/wallet/purchase-assets",
     },

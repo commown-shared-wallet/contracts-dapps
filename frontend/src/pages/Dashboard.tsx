@@ -72,20 +72,6 @@ function Dashboard() {
         eventDeposit,
     ] = useCommownSW();
 
-    const handleProxyCreated = (address: string, owners: string[]) => {
-        console.log("handleProxyCreated", { address, owners });
-    };
-
-    useEffect(() => {
-        if (contract) {
-            contract.on("ProxyCreated", handleProxyCreated);
-        }
-
-        return () => {
-            contract?.removeAllListeners("ProxyCreated");
-        };
-    }, [account]);
-
     const fetCSWBalance = useCallback(async () => {
         if (provider) {
             const balance = await provider.getBalance(proxyAddressOfUser);
@@ -138,6 +124,10 @@ function Dashboard() {
         if (usersOfCSW && usersContractCommownSW) {
             const resultOwnersWallet: Array<any> = [];
             usersOfCSW[0].owners.map(async (ownersAddress, index) => {
+                console.log(
+                    "Dashboard | fetchUsersOfWallet | usersOfCSW[0]",
+                    usersOfCSW[0]
+                );
                 const usersBalance =
                     await usersContractCommownSW?.balancePerUser(ownersAddress);
                 resultOwnersWallet.push({
