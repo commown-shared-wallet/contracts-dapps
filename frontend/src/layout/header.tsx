@@ -5,6 +5,7 @@ import {
     Burger,
     useMantineTheme,
     ActionIcon,
+    Indicator,
 } from "@mantine/core";
 
 import { useState } from "react";
@@ -43,16 +44,18 @@ function headerLayout() {
                 />
             </MediaQuery>
             <MediaQuery smallerThan="sm" styles={{ display: "none" }}>
-                <Text
-                    component={Link}
-                    to="/"
-                    variant="gradient"
-                    gradient={{ from: "indigo", to: "cyan", deg: 45 }}
-                    size="lg"
-                    transform="uppercase"
-                >
-                    CommOwn - Shared Wallet
-                </Text>
+                <Indicator inline label="Alpha" size={16}>
+                    <Text
+                        component={Link}
+                        to="/"
+                        variant="gradient"
+                        gradient={{ from: "indigo", to: "cyan", deg: 45 }}
+                        size="lg"
+                        transform="uppercase"
+                    >
+                        CommOwn - Shared Wallet
+                    </Text>
+                </Indicator>
             </MediaQuery>
             <div
                 style={{
