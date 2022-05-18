@@ -3,12 +3,13 @@ pragma solidity 0.8.13;
 
 import "@openzeppelin/contracts/proxy/ERC1967/ERC1967Proxy.sol";
 import "./CommownSW.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 /// @title Commown Shared Wallet Proxy Factory
 /// @author Aurélien ALBE - Younès MANJAL 😎
 /// @notice Proxy factory contract for creation of a Commown Shared Wallet
 /// @dev Proxy factory contract. State variables stored in the proxy. Logic will be in the Commown Shared Wallet contract.
-contract CommownSWProxyFactory {
+contract CommownSWProxyFactory is Ownable {
     /// @notice Emitted when a proxy is created
     /// @dev Emitted when a proxy is created, can be use for front end purpose to get owners
     /// @param adrs Proxy's address created
@@ -44,6 +45,13 @@ contract CommownSWProxyFactory {
         external
         returns (address)
     {
+		uint256 size = _owners.length;
+		require(size <= 255 && size > 0, "_owners.length wrong");
+        require(
+            _confirmationNeeded > 0 && _confirmationNeeded <= size,
+            "invalid confirmation number"
+        );
+
         //Usage of the ERC1967Proxy
         //Initialisation of the proxy by calling the initialize function with selector
         ERC1967Proxy proxy = new ERC1967Proxy(
@@ -51,7 +59,8 @@ contract CommownSWProxyFactory {
             abi.encodeWithSelector(
                 CommownSW(payable(address(0))).initialize.selector,
                 _owners,
-                _confirmationNeeded
+                _confirmationNeeded,
+				owner()
             )
         );
 
