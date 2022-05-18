@@ -37,9 +37,10 @@ describe("01_CommownSWProxyFactory__01_deployProxyFactory", function () {
 
         await proxyFactory.deployed();
 
-        expect(await proxyFactory.logic()).to.be.not.undefined;
-        expect(await proxyFactory.logic()).to.be.not.null;
-        expect(await proxyFactory.logic()).to.be.not.NaN;
+		const logicAdrs = await proxyFactory.logic();
+        expect(logicAdrs).to.be.not.undefined;
+        expect(logicAdrs).to.be.not.null;
+        expect(logicAdrs).to.be.not.NaN;
     });
 });
 
@@ -70,6 +71,18 @@ describe("01_CommownSWProxyFactory__02_createProxy", function () {
         await expect(
             proxyFactory.connect(sign1).createProxy(addresses, confirmation)
         ).to.emit(proxyFactory, "ProxyCreated");
+    });
+	it("01__02-04: it reverts if nb of confirmation = 0 or nb of confirmation > nb of owners", async function () {
+		await expect(
+			proxyFactory.createProxy(addresses, 0)
+        ).to.be.revertedWith(
+            "invalid confirmation number"
+        );
+		await expect(
+			proxyFactory.createProxy(addresses, 4)
+        ).to.be.revertedWith(
+            "invalid confirmation number"
+        );
     });
 });
 
