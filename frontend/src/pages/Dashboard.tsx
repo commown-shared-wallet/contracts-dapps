@@ -64,7 +64,7 @@ function Dashboard() {
     /* Web3 */
     const context = useWeb3React();
     const { active, library: provider, account, chainId } = context;
-    const [contract] = useCommownSWProxyFactory();
+
     const [
         usersContractCommownSW,
         proxyAddressOfUser,
@@ -105,11 +105,7 @@ function Dashboard() {
                     balance: ethers.utils.formatEther(balance.toString()),
                 });
             });
-            console.log(
-                "Dashboard | eventDeposit | lastTransactions",
-                typeof lastTransactions,
-                lastTransactions
-            );
+
             setUserBalance(currentBalance);
             setLastDepositEvents(lastTransactions);
         }
@@ -123,7 +119,7 @@ function Dashboard() {
     const fetchUsersOfWallet = useCallback(async () => {
         if (usersOfCSW && usersContractCommownSW) {
             const resultOwnersWallet: Array<any> = [];
-            usersOfCSW[0].owners.map(async (ownersAddress, index) => {
+            usersOfCSW[0].owners.map(async (ownersAddress) => {
                 console.log(
                     "Dashboard | fetchUsersOfWallet | usersOfCSW[0]",
                     usersOfCSW[0]
