@@ -1,28 +1,76 @@
 /*
  * * React Utils
  */
+import { useCallback, useEffect, useState } from "react";
+import { useCopy } from "@hooks/useCopy";
+import { ellipsisAddress } from "@utils/pipes";
 
 /*
  * * Mantine UI Library
  */
-import { Paper, Title } from "@mantine/core";
+import { Paper, Title, UnstyledButton } from "@mantine/core";
+import { Wallet } from "tabler-icons-react";
+import { useNotifications } from "@mantine/notifications";
 
 /*
  * *  Wallet && Blockchain interaction
  */
 import { ethers } from "ethers";
 import { useWeb3React } from "@web3-react/core";
-import { CommownSWProxyFactory } from "@utils/getContract";
-import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
+import { useCommownSW } from "@hooks/useCommownSW";
+import { SnippetAccordion } from "@components/SnippetAccordion";
 
 function BalancesCoins() {
     /* React */
+    const [copyElement] = useCopy();
+    const [walletBalance, setWalletBalance] = useState<number>();
+    const [valueETH, setValueETH] = useState<number>();
+
+    /*Mantine */
+    const notifications = useNotifications();
 
     /* Web3 */
+    const context = useWeb3React();
+    const { library: provider, account, chainId } = context;
+    const [usersContractCommownSW, proxyAddressOfUser, , eventDeposit] =
+        useCommownSW();
 
-    /*State*/
+    const fetCSWBalance = useCallback(async () => {
+        if (provider) {
+            const balance = await provider.getBalance(proxyAddressOfUser);
+            setWalletBalance(parseFloat(ethers.utils.formatEther(balance)));
+        }
+    }, [usersContractCommownSW, eventDeposit]);
 
-    /* Mantine*/
+    useEffect(() => {
+        fetCSWBalance().catch(console.error);
+    }, [fetCSWBalance, chainId]);
+
+    useEffect(() => {
+        const url =
+            "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=eur";
+        const fetchData = async () => {
+            try {
+                const response = await fetch(url);
+                const json = await response.json();
+                if (walletBalance) {
+                    setValueETH(
+                        Math.round(walletBalance * json.ethereum.eur * 100) /
+                            100
+                    );
+                }
+            } catch (error) {
+                const e = error as Error;
+                notifications.showNotification({
+                    id: "erorrFetchValueETH",
+                    title: "Erorr Fetch Value ETH",
+                    color: "red",
+                    message: `Unable to fetch eth value : ${e.message}`,
+                });
+            }
+        };
+        fetchData();
+    }, [walletBalance]);
 
     return (
         <div>
@@ -33,8 +81,68 @@ function BalancesCoins() {
                         marginBottom: "20px",
                     }}
                 >
-                    Your Coins
+                    CSW Coins
                 </Title>
+                <Paper withBorder>
+                    {proxyAddressOfUser ? (
+                        <SnippetAccordion
+                            heads={[
+                                {
+                                    id: "assets" as const,
+                                    label: "Assets",
+                                },
+                                {
+                                    id: "account" as const,
+                                    label: "Current Account",
+                                },
+
+                                {
+                                    id: "walletBalance" as const,
+                                    label: "Wallet  Balance",
+                                },
+                                {
+                                    id: "valueETH" as const,
+                                    label: "Value (EUR) ",
+                                },
+                            ]}
+                            tableContent={[
+                                {
+                                    label: "CommOwn Shared Wallet",
+                                    icon: <Wallet size={40} />,
+                                    description: ellipsisAddress(
+                                        proxyAddressOfUser,
+                                        13,
+                                        11
+                                    ),
+                                    table: {
+                                        rows: [
+                                            {
+                                                account: (
+                                                    <UnstyledButton
+                                                        onClick={() => {
+                                                            copyElement(
+                                                                account
+                                                            );
+                                                        }}
+                                                    >
+                                                        {ellipsisAddress(
+                                                            account
+                                                                ? account
+                                                                : ""
+                                                        )}
+                                                    </UnstyledButton>
+                                                ),
+                                                walletBalance,
+                                                valueETH,
+                                                assets: "ETH",
+                                            },
+                                        ],
+                                    },
+                                },
+                            ]}
+                        />
+                    ) : null}
+                </Paper>
             </Paper>
         </div>
     );
