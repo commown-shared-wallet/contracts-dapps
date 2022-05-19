@@ -84,23 +84,22 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
 
         expect(await CSWContract.confirmationNeeded()).to.equal(2);
     });
-    it("02__01-02: Owner(Admin) of CommownSW is ProxyFactory", async function () {
-        /*expect(await CSWContract.owner()).to.be.equals(
-            CSWProxyFactoryContract.address
-        );*/
-
-		//TODOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO REECRIRE LE TEST
-		
-		console.log("proxy factory address: ",CSWProxyFactoryContract.address);
-		console.log("proxy factory owner: ", await CSWProxyFactoryContract.owner());
-		console.log("Old owner: ", await CSWContract.owner());
-
+    it("02__01-02: Owner(Admin) of CommownSW and CommownSWProxyFactory is sign0", async function () {
+		expect(await CSWContract.owner()).to.be.equals(
+            sign0.address
+        );
+		expect(await CSWProxyFactoryContract.owner()).to.be.equals(
+            sign0.address
+        );
+	});
+	it("02__01-03: it can transfer ownership", async function () {
 		const tx = await CSWContract.transferOwnership("0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199");
 		await tx.wait();
-		console.log("New owner: ", await CSWContract.owner());
-
+		expect(await CSWContract.owner()).to.be.equals(
+            "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
+        );
 	});
-    it("02__01-03: it handles different state per proxy", async function () {
+    it("02__01-04: it handles different state per proxy", async function () {
         proxyCreated = await CSWProxyFactoryContract.createProxy(
             addresses2,
             confirmation
