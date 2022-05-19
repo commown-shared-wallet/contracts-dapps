@@ -9,7 +9,6 @@ import { IProposePocket, IProxyCreated } from "@interfaces/events";
  * * Mantine UI Library
  */
 import { hideNotification, useNotifications } from "@mantine/notifications";
-
 import {
     Accordion,
     Button,
