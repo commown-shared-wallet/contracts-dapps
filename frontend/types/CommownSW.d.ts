@@ -34,6 +34,7 @@ interface CommownSWInterface extends ethers.utils.Interface {
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "owner()": FunctionFragment;
     "owners(uint256)": FunctionFragment;
+    "pocketMaxID()": FunctionFragment;
     "pockets(uint256)": FunctionFragment;
     "proposePocket(address,bytes,uint256,address[],uint256[],address,uint256,uint256)": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
@@ -83,6 +84,10 @@ interface CommownSWInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "owners",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "pocketMaxID",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "pockets",
@@ -154,6 +159,10 @@ interface CommownSWInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "owners", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "pocketMaxID",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "pockets", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proposePocket",
@@ -350,6 +359,8 @@ export class CommownSW extends BaseContract {
 
     owners(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
+    pocketMaxID(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     pockets(
       arg0: BigNumberish,
       overrides?: CallOverrides
@@ -454,6 +465,8 @@ export class CommownSW extends BaseContract {
 
   owners(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
+  pocketMaxID(overrides?: CallOverrides): Promise<BigNumber>;
+
   pockets(
     arg0: BigNumberish,
     overrides?: CallOverrides
@@ -557,6 +570,8 @@ export class CommownSW extends BaseContract {
     owner(overrides?: CallOverrides): Promise<string>;
 
     owners(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    pocketMaxID(overrides?: CallOverrides): Promise<BigNumber>;
 
     pockets(
       arg0: BigNumberish,
@@ -836,6 +851,8 @@ export class CommownSW extends BaseContract {
 
     owners(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
+    pocketMaxID(overrides?: CallOverrides): Promise<BigNumber>;
+
     pockets(arg0: BigNumberish, overrides?: CallOverrides): Promise<BigNumber>;
 
     proposePocket(
@@ -943,6 +960,8 @@ export class CommownSW extends BaseContract {
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    pocketMaxID(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     pockets(
       arg0: BigNumberish,

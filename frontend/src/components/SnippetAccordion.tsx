@@ -1,4 +1,4 @@
-import { Group, Avatar, Text, Accordion, Table } from "@mantine/core";
+import { Group, Text, Accordion, Table } from "@mantine/core";
 import { ReactElement } from "react";
 
 interface AccordionLabelProps {
@@ -49,7 +49,16 @@ export function SnippetAccordion<T>({ tableContent, heads }: TableProps<T>) {
                     <thead>
                         <tr>
                             {heads.map((head, headKey) => {
-                                return <th key={headKey}>{head.label}</th>;
+                                return (
+                                    <th
+                                        style={{
+                                            textAlign: "center",
+                                        }}
+                                        key={headKey}
+                                    >
+                                        {head.label}
+                                    </th>
+                                );
                             })}
                         </tr>
                     </thead>

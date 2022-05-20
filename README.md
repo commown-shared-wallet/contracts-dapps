@@ -49,16 +49,16 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 > -   IN PROGRESS : 🔁 - [development](https://github.com/commown-shared-wallet/contracts-dapps/deployments/activity_log?environment=Preview+–+dapps-interface)
 > -   TO DO : 🚧
 
-|                                        RELEASE                                         | DESCRIPTION                                    | STATUS |
-| :------------------------------------------------------------------------------------: | ---------------------------------------------- | :----: |
-| [v1.0.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.0.0) | 🛠️ Settings & Technicals Environnement         |   ✅   |
-| [v1.1.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.1.0) | 👛 Connecting to a wallet                      |   ✅   |
+|                                        RELEASE                                         | DESCRIPTION                                            | STATUS |
+| :------------------------------------------------------------------------------------: | ------------------------------------------------------ | :----: |
+| [v1.0.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.0.0) | 🛠️ Settings & Technicals Environnement                 |   ✅   |
+| [v1.1.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.1.0) | 👛 Connecting to a wallet                              |   ✅   |
 | [v1.2.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.2.0) | 📦 Creating a CommOwn Shared Wallet & Funds management |   🔁   |
-| [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Pocket & NFT proposals            |   🔁   |
-| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 Visualize your assets (Dashboard)           |   🔁   |
-|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                          |   🚧   |
-|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 Resale of NFT                             |   🚧   |
-|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                             |   🚧   |
+| [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Pocket & NFT proposals                              |   🔁   |
+| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 Visualize your assets (Dashboard)                   |   🔁   |
+|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                                  |   🚧   |
+|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 Resale of NFT                                     |   🚧   |
+|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                                     |   🚧   |
 
 ## Directory Structure <a name="directory-sructure"></a>
 
@@ -148,7 +148,7 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 
 ## How to Update <a name="how-to-update"></a>
 
--   `yarn set version latest` — Bump Yarn to the latest version
+-   `yarn set version stable` — Bump Yarn to the latest stable version
 -   `yarn upgrade-interactive` — Update Node.js modules (dependencies)
 -   `yarn pnpify --sdk vscode` — Update TypeScript, ESLint, and Prettier settings in VSCode
 
