@@ -2,13 +2,12 @@
  * * React Utils
  */
 import { useCallback, useEffect, useState } from "react";
-import { useCopy } from "@hooks/useCopy";
 import { ellipsisAddress } from "@utils/pipes";
 
 /*
  * * Mantine UI Library
  */
-import { Paper, Title, UnstyledButton } from "@mantine/core";
+import { Paper, Title } from "@mantine/core";
 import { Wallet } from "tabler-icons-react";
 import { useNotifications } from "@mantine/notifications";
 
@@ -22,7 +21,6 @@ import { SnippetAccordion } from "@components/SnippetAccordion";
 
 function BalancesCoins() {
     /* React */
-    const [copyElement] = useCopy();
     const [walletBalance, setWalletBalance] = useState<number>();
     const [valueETH, setValueETH] = useState<number>();
 
@@ -53,7 +51,7 @@ function BalancesCoins() {
             try {
                 const response = await fetch(url);
                 const json = await response.json();
-                if (walletBalance) {
+                if (walletBalance && walletBalance >= 0) {
                     setValueETH(
                         Math.round(walletBalance * json.ethereum.eur * 100) /
                             100
@@ -92,11 +90,6 @@ function BalancesCoins() {
                                     label: "Assets",
                                 },
                                 {
-                                    id: "account" as const,
-                                    label: "Current Account",
-                                },
-
-                                {
                                     id: "walletBalance" as const,
                                     label: "Wallet  Balance",
                                 },
@@ -117,21 +110,6 @@ function BalancesCoins() {
                                     table: {
                                         rows: [
                                             {
-                                                account: (
-                                                    <UnstyledButton
-                                                        onClick={() => {
-                                                            copyElement(
-                                                                account
-                                                            );
-                                                        }}
-                                                    >
-                                                        {ellipsisAddress(
-                                                            account
-                                                                ? account
-                                                                : ""
-                                                        )}
-                                                    </UnstyledButton>
-                                                ),
                                                 walletBalance,
                                                 valueETH,
                                                 assets: "ETH",
