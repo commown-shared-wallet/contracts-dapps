@@ -1,3 +1,13 @@
+# [1.3.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.2.0...v1.3.0) (2022-05-20)
+
+
+### Features
+
+* **create-pockets:** first version of create pockets ([167aab6](https://github.com/commown-shared-wallet/contracts-dapps/commit/167aab6b762874b79147a70404cb28f635968d3b))
+* **create-pockets:** first version of create pockets ([b66400a](https://github.com/commown-shared-wallet/contracts-dapps/commit/b66400a05ee165b076fdd82fdacd879665231411))
+* **wallet-coins:** add view of wallet coins ([4066de1](https://github.com/commown-shared-wallet/contracts-dapps/commit/4066de1afb6c751244c8474913c1e7921be4a2d4))
+* **withdraw:** funciton to withdraw funds ([d41fc54](https://github.com/commown-shared-wallet/contracts-dapps/commit/d41fc540a94de53413c68dbd263d372cbbcb718f))
+
 # [1.2.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.1.0...v1.2.0) (2022-05-15)
 
 
