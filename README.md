@@ -49,17 +49,16 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 > -   IN PROGRESS : 🔁 - [development](https://github.com/commown-shared-wallet/contracts-dapps/deployments/activity_log?environment=Preview+–+dapps-interface)
 > -   TO DO : 🚧
 
-
-|                                        RELEASE                                         | DESCRIPTION                                    | STATUS |
-| :------------------------------------------------------------------------------------: | ---------------------------------------------- | :----: |
-| [v1.0.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.0.0) | 🛠️ Settings & Technicals Environnement         |   ✅   |
-| [v1.1.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.1.0) | 👛 Connecting to a wallet                      |   ✅   |
+|                                        RELEASE                                         | DESCRIPTION                                            | STATUS |
+| :------------------------------------------------------------------------------------: | ------------------------------------------------------ | :----: |
+| [v1.0.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.0.0) | 🛠️ Settings & Technicals Environnement                 |   ✅   |
+| [v1.1.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.1.0) | 👛 Connecting to a wallet                              |   ✅   |
 | [v1.2.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.2.0) | 📦 Creating a CommOwn Shared Wallet & Funds management |   ✅   |
-| [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Create Pocket & Visualize your assets            |   ✅   |
-| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 NFT Proposals & Refactoring Pockets           |   🔁   |
-|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                          |   🚧   |
-|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 Resale of NFT                             |   🚧   |
-|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                             |   🚧   |
+| [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Create Pocket & Visualize your assets               |   ✅   |
+| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 NFT Proposals & Refactoring Pockets                 |   🔁   |
+|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                                  |   🚧   |
+|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 Resale of NFT                                     |   🚧   |
+|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                                     |   🚧   |
 
 ## Directory Structure <a name="directory-sructure"></a>
 
@@ -128,8 +127,8 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 -   `npx hardhat coverage` — Check the percentage of tests coverage
 -   `npx hardhat clean` — Clears the cache a nd deletes all artifacts
 -   `npx hardhat help` — Prints this message
--   `npx hardhat run scripts/01_deployFromOZPlugin.ts --network localhost` — Deploy smart contract to local network
--   `npx hardhat run scripts/01_deployFromOZPlugin.ts --network rinkeby` — Deploy smart contract to testnet network
+-   `npx hardhat run scripts/01_CommownSWProxyFactory.ts --network localhost` — Deploy CommownSWProxyFactory contract to local network
+-   `npx hardhat run scripts/01_CommownSWProxyFactory.ts --network rinkeby` — Deploy CommownSWProxyFactory contract to testnet network
 -   `TS_NODE_FILES=true npx ts-node scripts/deploy.ts` —
 
 #### Linter
