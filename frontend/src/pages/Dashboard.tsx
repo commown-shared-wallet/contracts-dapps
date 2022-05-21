@@ -79,7 +79,7 @@ function Dashboard() {
             const balance = await provider.getBalance(proxyAddressOfUser);
             setWalletBalance(await ethers.utils.formatEther(balance));
         }
-    }, [usersContractCommownSW, eventDeposit, usersOfWallet]);
+    }, [usersContractCommownSW, eventDeposit, usersOfWallet, chainId]);
 
     useEffect(() => {
         fetCSWBalance().catch(console.error);
@@ -111,7 +111,7 @@ function Dashboard() {
             setUserBalance(currentBalance);
             setLastDepositEvents(lastTransactions);
         }
-    }, [usersOfCSW, eventDeposit, account]);
+    }, [usersOfCSW, eventDeposit, account, chainId]);
 
     useEffect(() => {
         fetchUsersBalance().catch(console.error);
