@@ -131,7 +131,7 @@
     "@commitlint/rules" "^16.2.4"
     "@commitlint/types" "^16.2.1"
 
-"@commitlint/load@>6.1.1", "@commitlint/load@^16.2.4", "@commitlint/load@^16.3.0":
+"@commitlint/load@>6.1.1", "@commitlint/load@^16.3.0":
   version "16.3.0"
   resolved "https://registry.yarnpkg.com/@commitlint/load/-/load-16.3.0.tgz#e674ccc9edefd64a2d8b82d175de81ec3bb70eca"
   integrity sha512-3tykjV/iwbkv2FU9DG+NZ/JqmP0Nm3b7aDwgCNQhhKV5P74JAuByULkafnhn+zsFGypG1qMtI5u+BZoa9APm0A==
