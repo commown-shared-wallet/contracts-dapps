@@ -84,13 +84,22 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
 
         expect(await CSWContract.confirmationNeeded()).to.equal(2);
     });
-    it("02__01-02: Owner(Admin) of CommownSW is ProxyFactory", async function () {
-        expect(await CSWContract.owner()).to.be.equals(
-            CSWProxyFactoryContract.address
+    it("02__01-02: Owner(Admin) of CommownSW and CommownSWProxyFactory is sign0", async function () {
+		expect(await CSWContract.owner()).to.be.equals(
+            sign0.address
         );
-        //How to change the admin of it
-    });
-    it("02__01-03: it handles different state per proxy", async function () {
+		expect(await CSWProxyFactoryContract.owner()).to.be.equals(
+            sign0.address
+        );
+	});
+	it("02__01-03: it can transfer ownership", async function () {
+		const tx = await CSWContract.transferOwnership("0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199");
+		await tx.wait();
+		expect(await CSWContract.owner()).to.be.equals(
+            "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"
+        );
+	});
+    it("02__01-04: it handles different state per proxy", async function () {
         proxyCreated = await CSWProxyFactoryContract.createProxy(
             addresses2,
             confirmation
@@ -151,7 +160,7 @@ describe("02_CommownSW__02_ReceiveAndWithdrawETH", function () {
             value: bn,
         };
     });
-    it("02__02-01: it receives ETH for a CSW owner, update his balance and update the global balance", async function () {
+    it("02__02-01: it receives ETH for a CSW owner, updates his balance and updates the global balance", async function () {
         const receiptTx = await sign0.sendTransaction(tx);
         await receiptTx.wait();
 

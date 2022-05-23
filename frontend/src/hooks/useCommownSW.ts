@@ -91,6 +91,7 @@ export function useCommownSW() {
                 owners,
             },
         ];
+        localStorage.removeItem("usersOfWallet");
         localStorage.setItem(
             "usersOfWallet",
             JSON.stringify(arrayProxyCreated)

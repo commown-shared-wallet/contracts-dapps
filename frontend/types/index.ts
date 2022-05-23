@@ -8,6 +8,7 @@ export type { ERC1967UpgradeUpgradeable } from "./ERC1967UpgradeUpgradeable";
 export type { Initializable } from "./Initializable";
 export type { UUPSUpgradeable } from "./UUPSUpgradeable";
 export type { ContextUpgradeable } from "./ContextUpgradeable";
+export type { Ownable } from "./Ownable";
 export type { IERC1822Proxiable } from "./IERC1822Proxiable";
 export type { IBeacon } from "./IBeacon";
 export type { ERC1967Proxy } from "./ERC1967Proxy";
@@ -24,6 +25,7 @@ export { ERC1967UpgradeUpgradeable__factory } from "./factories/ERC1967UpgradeUp
 export { Initializable__factory } from "./factories/Initializable__factory";
 export { UUPSUpgradeable__factory } from "./factories/UUPSUpgradeable__factory";
 export { ContextUpgradeable__factory } from "./factories/ContextUpgradeable__factory";
+export { Ownable__factory } from "./factories/Ownable__factory";
 export { IERC1822Proxiable__factory } from "./factories/IERC1822Proxiable__factory";
 export { IBeacon__factory } from "./factories/IBeacon__factory";
 export { ERC1967Proxy__factory } from "./factories/ERC1967Proxy__factory";
