@@ -17,7 +17,7 @@ contract CommownSWProxyFactory is Ownable {
     event ProxyCreated(address indexed adrs, address[] owners);
 
     /// @dev Logic contract : address of the CommownSW.sol deployed
-    address public immutable logic;
+    address public logic;
 
     /// @notice A user can have several CommownSW so several proxies
     /// @dev mapping of user => proxy address
@@ -36,12 +36,16 @@ contract CommownSWProxyFactory is Ownable {
         logic = address(new CommownSW());
     }
 
+	function defineNewLogic(address _contract) public onlyOwner {
+		logic = _contract;
+	}
+
     /// @notice function called from the front when you create a commown shared wallet
     /// @dev Function to call when you want to create a proxy for owners
     /// @param _owners list of the owners for the CSW
     /// @param _confirmationNeeded number of signature required for futures transaction in the CSW
     /// @return address of the proxy
-    function createProxy(address[] memory _owners, uint8 _confirmationNeeded)
+    function createProxy(address[] memory _owners, uint8 _confirmationNeeded, bytes calldata _data)
         external
         returns (address)
     {
@@ -56,14 +60,9 @@ contract CommownSWProxyFactory is Ownable {
         //Initialisation of the proxy by calling the initialize function with selector
         ERC1967Proxy proxy = new ERC1967Proxy(
             logic,
-            abi.encodeWithSelector(
-                CommownSW(payable(address(0))).initialize.selector,
-                _owners,
-                _confirmationNeeded,
-				owner()
-            )
+            _data
         );
-
+		
         //Add the proxy to the global list
         proxiesList.push(address(proxy));
 

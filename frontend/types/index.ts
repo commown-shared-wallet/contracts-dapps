@@ -17,6 +17,7 @@ export type { Proxy } from "./Proxy";
 export type { IERC721Receiver } from "./IERC721Receiver";
 export type { CommownSW } from "./CommownSW";
 export type { CommownSWProxyFactory } from "./CommownSWProxyFactory";
+export type { CommownSWV2 } from "./CommownSWV2";
 
 export { OwnableUpgradeable__factory } from "./factories/OwnableUpgradeable__factory";
 export { IERC1822ProxiableUpgradeable__factory } from "./factories/IERC1822ProxiableUpgradeable__factory";
@@ -34,3 +35,4 @@ export { Proxy__factory } from "./factories/Proxy__factory";
 export { IERC721Receiver__factory } from "./factories/IERC721Receiver__factory";
 export { CommownSW__factory } from "./factories/CommownSW__factory";
 export { CommownSWProxyFactory__factory } from "./factories/CommownSWProxyFactory__factory";
+export { CommownSWV2__factory } from "./factories/CommownSWV2__factory";

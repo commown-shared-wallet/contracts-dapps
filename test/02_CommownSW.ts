@@ -43,6 +43,10 @@ let proxyCreated: ContractTransaction;
 let receipt: ContractReceipt;
 let proxyCreatedAddress: string;
 
+let bytesData: string;
+let ABITest = ["function initialize(address[] memory _owners, uint8 _confirmationNeeded, address _admin)"];
+let iface = new ethers.utils.Interface(ABITest);
+
 describe("02_CommownSW__01_deployementAndInitializer", function () {
     beforeEach(async function () {
         CommownSWProxyFactory = await ethers.getContractFactory(
@@ -53,10 +57,11 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
         expect(await CSWProxyFactoryContract.logic()).to.be.not.undefined;
 
         [sign0, sign1] = await ethers.getSigners();
-
+		bytesData = iface.encodeFunctionData("initialize", [addresses1,confirmation,sign0.address]);
         proxyCreated = await CSWProxyFactoryContract.createProxy(
             addresses1,
-            confirmation
+            confirmation,
+			bytesData
         );
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
@@ -100,9 +105,11 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
         );
 	});
     it("02__01-04: it handles different state per proxy", async function () {
+		bytesData = iface.encodeFunctionData("initialize", [addresses2,confirmation,sign0.address]);
         proxyCreated = await CSWProxyFactoryContract.createProxy(
             addresses2,
-            confirmation
+            confirmation,
+			bytesData
         );
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
@@ -141,9 +148,11 @@ describe("02_CommownSW__02_ReceiveAndWithdrawETH", function () {
 
         [sign0, sign1, sign2, sign3] = await ethers.getSigners();
 
+		bytesData = iface.encodeFunctionData("initialize", [addresses1,confirmation,sign0.address]);
         proxyCreated = await CSWProxyFactoryContract.createProxy(
             addresses1,
-            confirmation
+            confirmation,
+			bytesData
         );
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
@@ -288,9 +297,11 @@ describe("02_CommownSW__03_createPocket", function () {
 
         [sign0, sign1, sign2, sign3] = await ethers.getSigners();
 
+        bytesData = iface.encodeFunctionData("initialize", [addresses1,confirmation,sign0.address]);
         proxyCreated = await CSWProxyFactoryContract.createProxy(
             addresses1,
-            confirmation
+            confirmation,
+			bytesData
         );
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
@@ -304,9 +315,9 @@ describe("02_CommownSW__03_createPocket", function () {
 
         addressTo = "0xd9145CCE52D386f254917e481eB44e9943F39138";
         totalAmount = 100;
-        let ABITest = ["function callMe(uint x) "];
-        let iface = new ethers.utils.Interface(ABITest);
-        bytesData = iface.encodeFunctionData("callMe", [2]);
+        let ABITestTmp = ["function callMe(uint x) "];
+        let ifaceEth = new ethers.utils.Interface(ABITestTmp);
+        bytesData = ifaceEth.encodeFunctionData("callMe", [2]);
         //0xe73620c30000000000000000000000000000000000000000000000000000000000000002
         //parseEther("1.0")
         nftAdrs = "0xd9145CCE52D386f254917e481eB44e9943F39138";
