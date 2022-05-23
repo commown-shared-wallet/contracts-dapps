@@ -105,6 +105,7 @@ contract CommownSW is
     //Status of the pocket
     enum PocketStatus {
         Proposed,
+		Voting,
         Signing,
         Executed
     }
@@ -163,18 +164,20 @@ contract CommownSW is
      */
     /// @param _owners is the owners list of the CommownSharedWallet to create
     /// @param _confirmationNeeded is the number of signatures from owners required to sign a transaction
-    function initialize(address[] memory _owners, uint8 _confirmationNeeded)
+    function initialize(address[] memory _owners, uint8 _confirmationNeeded, address _admin)
         public
         initializer
     {
-        require(_owners.length > 0, "owners required");
+		uint256 size = _owners.length;
+		require(size <= 255 && size > 0, "_owners.length wrong");
         require(
-            _confirmationNeeded > 0 && _confirmationNeeded <= _owners.length,
+            _confirmationNeeded > 0 && _confirmationNeeded <= size,
             "invalid confirmation number"
         );
 
         __Ownable_init();
         __UUPSUpgradeable_init();
+		transferOwnership(_admin);
 
         //For each owner...
         for (uint256 i; i < _owners.length; i++) {
