@@ -1,3 +1,14 @@
+# [1.4.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.3.0...v1.4.0) (2022-05-23)
+
+
+### Features
+
+* **fetch-nft-data:** fetching data of open sea ERC-721 nft ([7986ead](https://github.com/commown-shared-wallet/contracts-dapps/commit/7986ead916af81dbf507c06db25de76cd97844a9))
+* **propose-nft:** parsing nft url and propose nft ([88bce5d](https://github.com/commown-shared-wallet/contracts-dapps/commit/88bce5dc0f7ff79bca05901772cf2aaf46eb0be1))
+* **propose-nft:** parsing nft url and propose nft ([1a9aeed](https://github.com/commown-shared-wallet/contracts-dapps/commit/1a9aeede4bef9bb408d5a47d5af135da2e03da25))
+* **testnet-deploy:** csw proxy factory - deployment on testnet (rinkeby) ([f96a429](https://github.com/commown-shared-wallet/contracts-dapps/commit/f96a429f6534f656169016c109214fd8af44e89c))
+* **testnet-deploy:** csw proxy factory - deployment on testnet (rinkeby) ([d7221d2](https://github.com/commown-shared-wallet/contracts-dapps/commit/d7221d2b34df960a865ca05d467a77766b15153c))
+
 # [1.3.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.2.0...v1.3.0) (2022-05-20)
 
 
