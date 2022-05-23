@@ -21,6 +21,7 @@ import {
     Title,
     useAccordionState,
     useMantineTheme,
+    NativeSelect,
 } from "@mantine/core";
 import { CircleCheck, ListCheck, Plus, Trash, User } from "tabler-icons-react";
 
@@ -45,6 +46,14 @@ function CreateSharedWallet() {
 
     /*State*/
     const [netWorkName, setNetworkName] = useState("Hardhat");
+    const [maxConfirmation, setMaxConfirmation] = useState<string>("1");
+    const [dynamicMaxConfirmation, setDynamicMaxConfirmation] =
+        useState<Array<string>>();
+    const form = useForm({
+        initialValues: {
+            users: formList([{ useraddress: "", isOwner: true }]),
+        },
+    });
 
     /* Mantine*/
     const notifications = useNotifications();
@@ -55,38 +64,41 @@ function CreateSharedWallet() {
         if (active) setNetworkName(provider._network.name);
     }, [netWorkName]);
 
-    const form = useForm({
-        initialValues: {
-            users: formList([{ useraddress: "", isOwner: true }]),
-        },
-    });
+    useEffect(() => {
+        const arrayConfirmation = [];
+        if (maxConfirmation) {
+            for (let i = 1; i <= form.values.users.length; i++) {
+                arrayConfirmation.push(i.toString());
+            }
+            setDynamicMaxConfirmation(arrayConfirmation);
+        }
+    }, [form.values.users.length]);
 
     async function createProxy() {
-        if (active) {
-            try {
-                const usersAddress = Object.values(
-                    form.values.users.map((user) => user.useraddress)
-                );
-                console.log(usersAddress);
-                await write(
-                    contract ? contract.createProxy(usersAddress, 1) : "",
-                    "Shared Wallet Deployment",
-                    "Deploy a proxy for the users of this shared wallet",
-                    "Unable to deploy CommOwn - Shared Wallet"
-                );
-                hideNotification("erorrCreateProxy");
-            } catch (e) {
-                //const message =
-                notifications.showNotification({
-                    id: "erorrCreateProxy",
-                    title: "Erorr create users proxy Owner ",
-                    color: "red",
-                    message: `Unable to call promise : ${e}`,
-                });
-            }
+        try {
+            const usersAddress = Object.values(
+                form.values.users.map((user) => user.useraddress)
+            );
+            const maxSigner: number = parseInt(maxConfirmation);
+            await write(
+                contract ? contract.createProxy(usersAddress, maxSigner) : "",
+                "Shared Wallet Deployment",
+                "Deploy a proxy for the users of this shared wallet",
+                "Unable to deploy CommOwn - Shared Wallet"
+            );
+            hideNotification("erorrCreateProxy");
+        } catch (e) {
+            //const message =
+            notifications.showNotification({
+                id: "erorrCreateProxy",
+                title: "Erorr create users proxy Owner ",
+                color: "red",
+                message: `Unable to call promise : ${e}`,
+            });
         }
     }
 
+    /*Components */
     const fields = form.values.users.map((_, index) => (
         <Group key={index} mt="xs">
             <TextInput
@@ -111,7 +123,7 @@ function CreateSharedWallet() {
 
     return (
         <div>
-            <Paper shadow="xs" p="xl" radius={0}>
+            <Paper style={{ maxWidth: "700px" }} shadow="xs" p="xl" radius={0}>
                 <Title
                     order={2}
                     style={{
@@ -161,7 +173,7 @@ function CreateSharedWallet() {
                         label="Owners and Confirmations"
                         icon={<ListCheck color={theme.colors.red[6]} />}
                     >
-                        <Box sx={{ maxWidth: 500 }} mx="auto">
+                        <Box mx="auto">
                             {fields.length > 0 ? (
                                 <Group mb="xs">
                                     <Text
@@ -198,6 +210,22 @@ function CreateSharedWallet() {
                                 </Button>
                             </Group>
                         </Box>
+                        <NativeSelect
+                            style={{ maxWidth: "250px" }}
+                            label="Number of validations required:"
+                            placeholder="Number of validation"
+                            description={`out of ${form.values.users.length} owner(s)`}
+                            value={maxConfirmation}
+                            onChange={(event) =>
+                                setMaxConfirmation(event.currentTarget.value)
+                            }
+                            data={
+                                dynamicMaxConfirmation
+                                    ? dynamicMaxConfirmation
+                                    : []
+                            }
+                        />
+
                         <Group position="apart" mt="xl">
                             <Button
                                 size="lg"

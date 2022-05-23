@@ -36,13 +36,15 @@ import {
 /*
  * *  Wallet && Blockchain interaction
  */
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useWeb3React } from "@web3-react/core";
 import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
+import useContract from "@hooks/useContract";
 
 function Dashboard() {
     /* React */
     const [copyElement] = useCopy();
+    const [write, read] = useContract();
 
     /* Mantine*/
     const notifications = useNotifications();
@@ -57,14 +59,14 @@ function Dashboard() {
     /*State*/
     const [walletBalance, setWalletBalance] = useState("");
     const [userBalance, setUserBalance] = useState("");
-    const [usersWallet, setUsersWallet] = useState(elements);
+    const [usersOfWallet, setUsersWallet] = useState(elements);
     const [lastDepositEvents, setLastDepositEvents] = useState<any>();
     const [depositAmount, setDepositAmount] = useState<any>(0.1);
 
     /* Web3 */
     const context = useWeb3React();
     const { active, library: provider, account, chainId } = context;
-    const [contract] = useCommownSWProxyFactory();
+
     const [
         usersContractCommownSW,
         proxyAddressOfUser,
@@ -72,26 +74,12 @@ function Dashboard() {
         eventDeposit,
     ] = useCommownSW();
 
-    const handleProxyCreated = (address: string, owners: string[]) => {
-        console.log("handleProxyCreated", { address, owners });
-    };
-
-    useEffect(() => {
-        if (contract) {
-            contract.on("ProxyCreated", handleProxyCreated);
-        }
-
-        return () => {
-            contract?.removeAllListeners("ProxyCreated");
-        };
-    }, [account]);
-
     const fetCSWBalance = useCallback(async () => {
         if (provider) {
             const balance = await provider.getBalance(proxyAddressOfUser);
             setWalletBalance(await ethers.utils.formatEther(balance));
         }
-    }, [usersContractCommownSW, eventDeposit, usersWallet]);
+    }, [usersContractCommownSW, eventDeposit, usersOfWallet]);
 
     useEffect(() => {
         fetCSWBalance().catch(console.error);
@@ -119,11 +107,7 @@ function Dashboard() {
                     balance: ethers.utils.formatEther(balance.toString()),
                 });
             });
-            console.log(
-                "Dashboard | eventDeposit | lastTransactions",
-                typeof lastTransactions,
-                lastTransactions
-            );
+
             setUserBalance(currentBalance);
             setLastDepositEvents(lastTransactions);
         }
@@ -137,9 +121,13 @@ function Dashboard() {
     const fetchUsersOfWallet = useCallback(async () => {
         if (usersOfCSW && usersContractCommownSW) {
             const resultOwnersWallet: Array<any> = [];
-            usersOfCSW[0].owners.map(async (ownersAddress, index) => {
+            usersOfCSW[0].owners.map(async (ownersAddress) => {
+                console.log(
+                    "Dashboard | fetchUsersOfWallet | usersOfCSW[0]",
+                    usersOfCSW[0]
+                );
                 const usersBalance =
-                    await usersContractCommownSW?.balancePerUser(ownersAddress);
+                    await usersContractCommownSW.balancePerUser(ownersAddress);
                 resultOwnersWallet.push({
                     assets: "ETH",
                     address: ellipsisAddress(ownersAddress, 10, 8),
@@ -190,6 +178,18 @@ function Dashboard() {
             }
         }
     }
+
+    const withdrawFunds = useCallback(async () => {
+        const amount = ethers.utils.parseUnits(depositAmount, "ether");
+        if (usersContractCommownSW) {
+            await write(
+                usersContractCommownSW.withdraw(amount),
+                "withdraw funds",
+                "Withdraw Funds of CSW",
+                "Unable to withdraw funds of CSW : "
+            );
+        }
+    }, [usersContractCommownSW, eventDeposit, usersOfWallet]);
 
     return (
         <div>
@@ -290,7 +290,7 @@ function Dashboard() {
                             </Paper>
 
                             <Paper withBorder>
-                                {usersWallet && usersContractCommownSW ? (
+                                {usersOfWallet.length > 0 ? (
                                     <SnippetAccordion
                                         heads={[
                                             {
@@ -312,9 +312,7 @@ function Dashboard() {
                                                 label: "Summary of the balance by users",
                                                 icon: <AddressBook size={40} />,
                                                 table: {
-                                                    rows: usersWallet
-                                                        ? usersWallet
-                                                        : [],
+                                                    rows: usersOfWallet,
                                                 },
                                             },
                                         ]}
@@ -411,6 +409,7 @@ function Dashboard() {
                                                 from: "yellow",
                                                 to: "orange",
                                             }}
+                                            onClick={withdrawFunds}
                                             uppercase
                                             disabled={
                                                 depositAmount <= 0.1

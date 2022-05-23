@@ -29,7 +29,6 @@ export function useCommownSW() {
     const { active, library: provider, account } = context;
     /**Contract */
     const [contract] = useCommownSWProxyFactory();
-    console.log("useCommownSW || contract: ", contract);
     const [proxyAddressOfUser, setProxyAddressOfUser] = useState("");
     const [usersContractCommownSW, setUsersContractCommownSW] =
         useState<ICSW>();
@@ -92,28 +91,33 @@ export function useCommownSW() {
                 owners,
             },
         ];
-        setUsersOfCSW(arrayProxyCreated);
+        localStorage.setItem(
+            "usersOfWallet",
+            JSON.stringify(arrayProxyCreated)
+        );
     };
 
-    useEffect(() => {
-        const test = async () => {
-            if (contract && proxyAddressOfUser) {
-                const filterTo = await contract.filters.ProxyCreated(
-                    proxyAddressOfUser
-                );
-                console.log(
-                    "useCommownSW || proxyCreated : ",
-                    await contract.on("ProxyCreated", handleProxyCreated)
-                );
-                console.log("useCommownSW || contract : ", await contract);
-            }
-        };
-        test();
+    const fetchEventsProxyCreated = useCallback(async () => {
+        if (contract && proxyAddressOfUser) {
+            //const filterTo = await contract.filters.ProxyCreated(proxyAddressOfUser);
+            await contract.on("ProxyCreated", handleProxyCreated);
+            const usersJSON = localStorage.getItem("usersOfWallet");
+            const users = usersJSON != null ? JSON.parse(usersJSON) : "{}";
+            setUsersOfCSW(users);
+            console.log("useCommownSW || proxyCreated : ", usersOfCSW);
+        }
+    }, [proxyAddressOfUser]);
 
+    useEffect(() => {
+        try {
+            fetchEventsProxyCreated();
+        } catch (error) {
+            console.error("useCommownCSW || fetchEventsProxyCreated", error);
+        }
         return () => {
             contract?.removeAllListeners("ProxyCreated");
         };
-    }, [handleProxyCreated]);
+    }, [fetchEventsProxyCreated]);
 
     //Event Deposit
     const handleDeposit = (
@@ -136,11 +140,6 @@ export function useCommownSW() {
     useEffect(() => {
         if (usersContractCommownSW) {
             usersContractCommownSW.on("Deposit", handleDeposit);
-            console.log(
-                "useCommownSW || Deposit",
-                typeof eventDeposit,
-                ethers.utils.formatEther(eventDeposit[0].amount.toString())
-            );
         }
         return () => {
             usersContractCommownSW?.removeAllListeners("Deposit");
