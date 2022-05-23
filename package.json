@@ -13,7 +13,7 @@
         "@openzeppelin/hardhat-upgrades": "^1.17.0"
     },
     "devDependencies": {
-        "@commitlint/cli": "^16.3.0",
+        "@commitlint/cli": "^17.0.0",
         "@commitlint/config-conventional": "^17.0.0",
         "@commitlint/cz-commitlint": "^17.0.0",
         "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
