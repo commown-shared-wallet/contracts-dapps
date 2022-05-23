@@ -8,7 +8,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     "CommownSWProxyFactory"
   );
 
-  //Instance of Voting contract
+  //Instance of CSW Proxy Factory contract
   const commownSWProxyFactory = await CommownSWProxyFactory.deploy();
 
   //waiting of contract deployment

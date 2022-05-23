@@ -22,10 +22,14 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
   functions: {
     "commownProxiesPerUser(address,uint256)": FunctionFragment;
-    "createProxy(address[],uint8)": FunctionFragment;
+    "createProxy(address[],uint8,bytes)": FunctionFragment;
+    "defineNewLogic(address)": FunctionFragment;
     "logic()": FunctionFragment;
     "nbProxiesPerUser(address)": FunctionFragment;
+    "owner()": FunctionFragment;
     "proxiesList(uint256)": FunctionFragment;
+    "renounceOwnership()": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -34,16 +38,29 @@ interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createProxy",
-    values: [string[], BigNumberish]
+    values: [string[], BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "defineNewLogic",
+    values: [string]
   ): string;
   encodeFunctionData(functionFragment: "logic", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "nbProxiesPerUser",
     values: [string]
   ): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "proxiesList",
     values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferOwnership",
+    values: [string]
   ): string;
 
   decodeFunctionResult(
@@ -54,22 +71,41 @@ interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
     functionFragment: "createProxy",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "defineNewLogic",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "logic", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "nbProxiesPerUser",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "proxiesList",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferOwnership",
+    data: BytesLike
+  ): Result;
 
   events: {
+    "OwnershipTransferred(address,address)": EventFragment;
     "ProxyCreated(address,address[])": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProxyCreated"): EventFragment;
 }
+
+export type OwnershipTransferredEvent = TypedEvent<
+  [string, string] & { previousOwner: string; newOwner: string }
+>;
 
 export type ProxyCreatedEvent = TypedEvent<
   [string, string[]] & { adrs: string; owners: string[] }
@@ -128,6 +164,12 @@ export class CommownSWProxyFactory extends BaseContract {
     createProxy(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    defineNewLogic(
+      _contract: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -138,10 +180,21 @@ export class CommownSWProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
 
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
     proxiesList(
       arg0: BigNumberish,
       overrides?: CallOverrides
     ): Promise<[string]>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
   commownProxiesPerUser(
@@ -153,6 +206,12 @@ export class CommownSWProxyFactory extends BaseContract {
   createProxy(
     _owners: string[],
     _confirmationNeeded: BigNumberish,
+    _data: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  defineNewLogic(
+    _contract: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -160,7 +219,18 @@ export class CommownSWProxyFactory extends BaseContract {
 
   nbProxiesPerUser(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
+  owner(overrides?: CallOverrides): Promise<string>;
+
   proxiesList(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+  renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
     commownProxiesPerUser(
@@ -172,8 +242,11 @@ export class CommownSWProxyFactory extends BaseContract {
     createProxy(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _data: BytesLike,
       overrides?: CallOverrides
     ): Promise<string>;
+
+    defineNewLogic(_contract: string, overrides?: CallOverrides): Promise<void>;
 
     logic(overrides?: CallOverrides): Promise<string>;
 
@@ -182,10 +255,35 @@ export class CommownSWProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    owner(overrides?: CallOverrides): Promise<string>;
+
     proxiesList(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
+
+    renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
   };
 
   filters: {
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
+    OwnershipTransferred(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): TypedEventFilter<
+      [string, string],
+      { previousOwner: string; newOwner: string }
+    >;
+
     "ProxyCreated(address,address[])"(
       adrs?: string | null,
       owners?: null
@@ -207,6 +305,12 @@ export class CommownSWProxyFactory extends BaseContract {
     createProxy(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    defineNewLogic(
+      _contract: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -217,9 +321,20 @@ export class CommownSWProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
     proxiesList(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
@@ -233,6 +348,12 @@ export class CommownSWProxyFactory extends BaseContract {
     createProxy(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    defineNewLogic(
+      _contract: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -243,9 +364,20 @@ export class CommownSWProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     proxiesList(
       arg0: BigNumberish,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }

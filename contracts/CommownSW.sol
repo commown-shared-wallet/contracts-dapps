@@ -164,6 +164,7 @@ contract CommownSW is
      */
     /// @param _owners is the owners list of the CommownSharedWallet to create
     /// @param _confirmationNeeded is the number of signatures from owners required to sign a transaction
+	/// @param _admin is the administrator of the CSW logic and the CSW Proxy Factory
     function initialize(address[] memory _owners, uint8 _confirmationNeeded, address _admin)
         public
         initializer

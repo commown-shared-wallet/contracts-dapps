@@ -8,6 +8,7 @@ export type { ERC1967UpgradeUpgradeable } from "./ERC1967UpgradeUpgradeable";
 export type { Initializable } from "./Initializable";
 export type { UUPSUpgradeable } from "./UUPSUpgradeable";
 export type { ContextUpgradeable } from "./ContextUpgradeable";
+export type { Ownable } from "./Ownable";
 export type { IERC1822Proxiable } from "./IERC1822Proxiable";
 export type { IBeacon } from "./IBeacon";
 export type { ERC1967Proxy } from "./ERC1967Proxy";
@@ -16,6 +17,7 @@ export type { Proxy } from "./Proxy";
 export type { IERC721Receiver } from "./IERC721Receiver";
 export type { CommownSW } from "./CommownSW";
 export type { CommownSWProxyFactory } from "./CommownSWProxyFactory";
+export type { CommownSWV2 } from "./CommownSWV2";
 
 export { OwnableUpgradeable__factory } from "./factories/OwnableUpgradeable__factory";
 export { IERC1822ProxiableUpgradeable__factory } from "./factories/IERC1822ProxiableUpgradeable__factory";
@@ -24,6 +26,7 @@ export { ERC1967UpgradeUpgradeable__factory } from "./factories/ERC1967UpgradeUp
 export { Initializable__factory } from "./factories/Initializable__factory";
 export { UUPSUpgradeable__factory } from "./factories/UUPSUpgradeable__factory";
 export { ContextUpgradeable__factory } from "./factories/ContextUpgradeable__factory";
+export { Ownable__factory } from "./factories/Ownable__factory";
 export { IERC1822Proxiable__factory } from "./factories/IERC1822Proxiable__factory";
 export { IBeacon__factory } from "./factories/IBeacon__factory";
 export { ERC1967Proxy__factory } from "./factories/ERC1967Proxy__factory";
@@ -32,3 +35,4 @@ export { Proxy__factory } from "./factories/Proxy__factory";
 export { IERC721Receiver__factory } from "./factories/IERC721Receiver__factory";
 export { CommownSW__factory } from "./factories/CommownSW__factory";
 export { CommownSWProxyFactory__factory } from "./factories/CommownSWProxyFactory__factory";
+export { CommownSWV2__factory } from "./factories/CommownSWV2__factory";
