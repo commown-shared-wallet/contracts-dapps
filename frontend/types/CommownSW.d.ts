@@ -27,7 +27,7 @@ interface CommownSWInterface extends ethers.utils.Interface {
     "confirmationNeeded()": FunctionFragment;
     "globalTotalWithdrawed()": FunctionFragment;
     "globalWithdrawPerUser(address)": FunctionFragment;
-    "initialize(address[],uint8)": FunctionFragment;
+    "initialize(address[],uint8,address)": FunctionFragment;
     "isOwner(address)": FunctionFragment;
     "isSigned(uint256,address)": FunctionFragment;
     "items721(uint256,address,uint256)": FunctionFragment;
@@ -65,7 +65,7 @@ interface CommownSWInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [string[], BigNumberish]
+    values: [string[], BigNumberish, string]
   ): string;
   encodeFunctionData(functionFragment: "isOwner", values: [string]): string;
   encodeFunctionData(
@@ -329,6 +329,7 @@ export class CommownSW extends BaseContract {
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -435,6 +436,7 @@ export class CommownSW extends BaseContract {
   initialize(
     _owners: string[],
     _confirmationNeeded: BigNumberish,
+    _admin: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -541,6 +543,7 @@ export class CommownSW extends BaseContract {
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _admin: string,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -821,6 +824,7 @@ export class CommownSW extends BaseContract {
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -925,6 +929,7 @@ export class CommownSW extends BaseContract {
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
+      _admin: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
