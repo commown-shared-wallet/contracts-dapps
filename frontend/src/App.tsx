@@ -29,7 +29,6 @@ import BalancesNFT from "@pages/BalancesNFT";
 import AssetsProposals from "@pages/AssetsProposals";
 import Dashboard from "@pages/Dashboard";
 import CreateSharedWallet from "@pages/CreateSW";
-import CreatePockets from "@pages/CreatePockets";
 
 function App() {
     /*Theme Mode Management*/
@@ -62,10 +61,6 @@ function App() {
                             <Route
                                 path="/wallet/assets-proposals"
                                 element={<AssetsProposals />}
-                            />
-                            <Route
-                                path="/wallet/purchase-assets"
-                                element={<CreatePockets />}
                             />
                             <Route
                                 path="/wallet/assets/balances/*"

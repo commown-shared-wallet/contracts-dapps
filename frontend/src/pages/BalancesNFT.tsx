@@ -4,6 +4,10 @@
 import { useCallback, useEffect, useState } from "react";
 import useContract from "@hooks/useContract";
 import { useCommownSW } from "@hooks/useCommownSW";
+import { convertIpfsUrl, ellipsisAddress } from "@utils/pipes";
+import { INftData, IUserWithShare } from "@interfaces/csw";
+import { getDataOfOpenSeaNFT } from "@utils/helpers";
+
 /*
  * * Mantine UI Library
  */
@@ -18,14 +22,13 @@ import {
     Text,
     Grid,
 } from "@mantine/core";
-import { hideNotification, useNotifications } from "@mantine/notifications";
+import { useNotifications } from "@mantine/notifications";
 
 /*
  * *  Wallet && Blockchain interaction
  */
 import { ethers } from "ethers";
 import { useWeb3React } from "@web3-react/core";
-import { ellipsisAddress } from "@utils/pipes";
 
 interface IPocket {
     to: string;
@@ -46,11 +49,13 @@ function BalancesNFT() {
     /*State*/
     const [pocketMaxID, setPocketMaxID] = useState<number>();
     const [pockets, setPockets] = useState<IPockets>();
+    const [sharePerUser, setSharePerUser] = useState<Array<IUserWithShare>>();
+    const [nftData, setNftData] = useState<INftData>();
 
     /* Web3 */
     const context = useWeb3React();
-    const { active, account, chainId } = context;
-    const [contract] = useCommownSW();
+    const { account, chainId, library: provider } = context;
+    const [contract, , usersWallet] = useCommownSW();
 
     //get pocketMaxID
     const fetchPocketMaxID = useCallback(async () => {
@@ -70,37 +75,46 @@ function BalancesNFT() {
 
     //get proxy address of users
     const fetchPocketsOfCSW = useCallback(async () => {
-        if (contract && pocketMaxID && pocketMaxID != 0) {
-            const usersWallet: Array<string> = [
-                "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-                "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-                "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
-            ];
+        if (
+            contract &&
+            pocketMaxID &&
+            pocketMaxID != 0 &&
+            usersWallet &&
+            chainId
+        ) {
+            const users: Array<string> = usersWallet[0].owners;
 
             let pocket;
             let pockets = [];
 
-            interface IUserShare {
-                address: string;
-                share: string;
-            }
+            const signer = await provider.getSigner();
+            const nftData = await getDataOfOpenSeaNFT(
+                chainId,
+                "0x6a5d5697b82e5b3d1261333666cc8946a1b0d462",
+                "1",
+                signer
+            );
+            setNftData(nftData);
 
-            for (let i = 0; i < pocketMaxID; i++) {
-                let sharePerUser: Array<IUserShare> = [];
+            for (let i = 0; i <= pocketMaxID; i++) {
+                let sharePerUser: Array<IUserWithShare> = [];
                 pocket = await contract.pockets(i);
-                usersWallet.map(async (user) => {
+
+                users.map(async (user) => {
                     const userShare = await contract.sharePerUser(
                         pocketMaxID,
                         user
                     );
-                    const userShareObject: IUserShare = {
+                    const userShareObject: IUserWithShare = {
                         address: user,
-                        share: userShare.toString(),
+                        share: parseInt(userShare.toString()),
                     };
                     sharePerUser.push(userShareObject);
                 });
+
                 pockets.push(pocket);
             }
+            setSharePerUser(sharePerUser);
             setPockets(pockets);
         }
     }, [pocketMaxID]);
@@ -118,14 +132,15 @@ function BalancesNFT() {
                 return "Proposed";
                 break;
             case 1:
-                return "Signing";
+                return "Voting";
                 break;
             case 2:
-                return "Executed";
+                return "Signing";
                 break;
             case 3:
-                return "Test";
+                return "Executed";
                 break;
+
             default:
                 notifications.showNotification({
                     id: "pocketsStatusError",
@@ -150,14 +165,24 @@ function BalancesNFT() {
                 </Title>
                 <Grid>
                     {pockets &&
+                        nftData &&
                         pockets?.map((pocket, index) => (
                             <Grid.Col key={index} sm={12} md={4} lg={4}>
                                 <Card shadow="sm" p="lg">
                                     <Card.Section>
                                         <Image
-                                            src="https://fakeimg.pl/400x400/"
+                                            src={
+                                                nftData.image.substring(
+                                                    0,
+                                                    4
+                                                ) === "ipfs"
+                                                    ? convertIpfsUrl(
+                                                          nftData.image
+                                                      )
+                                                    : nftData.image
+                                            }
                                             height={160}
-                                            alt="Norway"
+                                            alt={nftData?.name}
                                         />
                                     </Card.Section>
 
@@ -168,10 +193,13 @@ function BalancesNFT() {
                                             marginBottom: 15,
                                         }}
                                     >
-                                        <Text weight={500}>NFT Name</Text>
-                                        <Badge color="orange" variant="light">
+                                        <Text weight={500}>{nftData.name}</Text>
+                                        <Badge color="indigo" variant="light">
                                             {switchPocketStatut(pocket.pStatus)}
                                         </Badge>
+                                        <Text lineClamp={2}>
+                                            {nftData.description}
+                                        </Text>
                                     </Group>
 
                                     <Group
@@ -182,23 +210,35 @@ function BalancesNFT() {
                                         }}
                                     >
                                         <Text size="sm">
-                                            <b>Transaction Address: </b>
-                                            {ellipsisAddress(pocket.to)}
+                                            <b>Share by Users : </b>
                                         </Text>
                                         <Text size="sm">
-                                            <b>Total Amount: </b>
-                                            {pocket.totalAmount.toNumber()}
+                                            {sharePerUser
+                                                ? sharePerUser.map(
+                                                      (users, index) => (
+                                                          <div key={index}>
+                                                              <b>
+                                                                  {ellipsisAddress(
+                                                                      users.address
+                                                                  )}{" "}
+                                                                  :{" "}
+                                                              </b>
+                                                              {users.share}
+                                                          </div>
+                                                      )
+                                                  )
+                                                : null}
                                         </Text>
 
                                         <Text size="sm">
-                                            <b>Data: </b>
-                                            {ellipsisAddress(pocket.data)}
+                                            <b>Total Amount: </b>
+                                            {pocket.totalAmount.toNumber()}
                                         </Text>
                                     </Group>
 
                                     <Button
                                         variant="light"
-                                        color="orange"
+                                        color="indigo"
                                         fullWidth
                                         style={{ marginTop: 14 }}
                                     >
