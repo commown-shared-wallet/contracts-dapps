@@ -36,8 +36,6 @@ contract CommownSW is
         PocketStatus pStatus; //Status of the pocket
         uint256 totalAmount; //Total amount to reach
     }
-    /// @dev pockets list, usefull to get the id
-    Pocket[] public pockets;
 
 	/* ================================================================================== */
 	/* ==================================== Enums ======================================= */
@@ -59,6 +57,9 @@ contract CommownSW is
     /// @dev Only owners can transmit decision point though pockets or votes or via "transaction something"
     address[] public owners;
 
+    /// @dev pockets list, usefull to get the id
+    Pocket[] public pockets;
+	
     /// @dev Utility mapping to check if an address is owner of that CSW
     mapping(address => bool) public isOwner;
 
