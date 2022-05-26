@@ -21,6 +21,73 @@ contract CommownSWV2 is
     OwnableUpgradeable,
     IERC721Receiver
 {
+
+    string public constant VERSION = "0.0.2";
+
+	/* ================================================================================== */
+	/* ==================================== Structs ===================================== */
+	/* ================================================================================== */
+	
+	/// @notice This is the pocket representing an act of investment or selling. Eg : I want to buy an NFT
+    /// @dev Pocket is the main struct representing an act of investment and evolve in function of the status PocketStatus
+    struct Pocket {
+        address to; //To whom the pocket will be buy
+        bytes data; //Data on chain representing the transaction
+        PocketStatus pStatus; //Status of the pocket
+        uint256 totalAmount; //Total amount to reach
+    }
+
+	/* ================================================================================== */
+	/* ==================================== Enums ======================================= */
+	/* ================================================================================== */
+
+	//Status of the pocket
+    enum PocketStatus {
+        Proposed,
+		Voting,
+        Signing,
+        Executed
+    }
+	
+	/* ================================================================================== */
+	/* ==================================== State ======================================= */
+	/* ================================================================================== */
+
+    /// @notice Owners list of the CommownSharedWallet
+    /// @dev Only owners can transmit decision point though pockets or votes or via "transaction something"
+    address[] public owners;
+
+    /// @dev pockets list, usefull to get the id
+    Pocket[] public pockets;
+	
+    /// @dev Utility mapping to check if an address is owner of that CSW
+    mapping(address => bool) public isOwner;
+
+    /// @notice Balance in Wei per User
+    mapping(address => uint256) public balancePerUser;
+
+    /// @notice Number of signatures from owners required to sign a transaction
+    /// @dev As the number of wallet is limited to uint8, number of confirmationNeeded follows that type
+    uint8 public confirmationNeeded;
+	uint256 public pocketMaxID;
+
+
+    /// @notice indicate if the owner x has signed the pocket ID y
+    /// @dev mapping of poketID => commownSW owner => bool
+    mapping(uint256 => mapping(address => bool)) public isSigned;
+
+    /// @notice indicate the share per user for the pocket ID x.
+    /// @dev mapping of poketID => commownSW owner => Share per user
+    mapping(uint256 => mapping(address => uint256)) public sharePerUser;
+
+    /// @notice indicate the NFT the owners willing to buy or bought
+    /// @dev mapping of poketID => ERC721 address => ID of the NFT => Quantity (that last categories is for bundles of NFT)
+    mapping(uint256 => mapping(address => mapping(uint256 => uint256))) public items721;
+
+	/* ================================================================================== */
+	/* ==================================== Events ====================================== */
+	/* ================================================================================== */
+
     /// @notice Emitted when a CommownSharedWallet is created
     /// @dev Emitted when a CSW is created, creator is indexed
     /// @param creator address of the creator
@@ -77,66 +144,10 @@ contract CommownSWV2 is
         uint256[] sharePerUser
     );
 
-    //Constant can be inizialized even with Proxies
-    string public constant VERSION = "0.0.2";
 
-    /// @notice Owners list of the CommownSharedWallet
-    /// @dev Only owners can transmit decision point though pockets or votes or via "transaction something"
-    address[] public owners;
-
-    /// @dev Utility mapping to check if an address is owner of that CSW
-    mapping(address => bool) public isOwner;
-
-    /// @notice Number of signatures from owners required to sign a transaction
-    /// @dev As the number of wallet is limited to uint8, number of confirmationNeeded follows that type
-    uint8 public confirmationNeeded;
-
-    /// @notice Total of ethers already withdrawed
-    /// @dev to keep ?
-    uint256 public globalTotalWithdrawed;
-
-    /// @notice Balance in Wei per User
-    mapping(address => uint256) public balancePerUser;
-
-    /// @notice Amount of withdrawed ethers per user
-    /// @dev to keep ?
-    mapping(address => uint256) public globalWithdrawPerUser;
-
-    //Status of the pocket
-    enum PocketStatus {
-        Proposed,
-		Voting,
-        Signing,
-        Executed
-    }
-
-    /// @notice This is the pocket representing an act of investment or selling. Eg : I want to buy an NFT
-    /// @dev Pocket is the main struct representing an act of investment and evolve in function of the status PocketStatus
-    struct Pocket {
-        address to; //To whom the pocket will be buy
-        bytes data; //Data on chain representing the transaction
-        PocketStatus pStatus; //Status of the pocket
-        uint256 totalAmount; //Total amount to reach
-    }
-    /// @dev pockets list, usefull to get the id
-    Pocket[] public pockets;
-	uint256 public pocketMaxID;
-
-
-    /// @notice indicate if the owner x has signed the pocket ID y
-    /// @dev mapping of poketID => commownSW owner => bool
-    mapping(uint256 => mapping(address => bool)) public isSigned;
-
-    /// @notice indicate the share per user for the pocket ID x.
-    /// @dev mapping of poketID => commownSW owner => Share per user
-    mapping(uint256 => mapping(address => uint256)) public sharePerUser;
-
-    /// @notice indicate the NFT the owners willing to buy or bought
-    /// @dev mapping of poketID => ERC721 address => ID of the NFT => Quantity (that last categories is for bundles of NFT)
-    mapping(uint256 => mapping(address => mapping(uint256 => uint256))) public items721;
-
-    //mapping(uint256 => mapping(address => uint256)) items20; //poketID => ERC20 => amount
-    //mapping(uint256 => mapping(address => mapping(uint256 => uint256))) items1155; //poketID => ERC1155 => ID => amount
+	/* ================================================================================== */
+	/* ==================================== Modifier ==================================== */
+	/* ================================================================================== */
 
     modifier isCommownOwner(address _sender) {
         require(isOwner[_sender], "not an owner");
@@ -156,6 +167,10 @@ contract CommownSWV2 is
         _;
     }
 
+	/* ================================================================================== */
+	/* ==================================== Constructor ================================= */
+	/* ================================================================================== */
+
     /** @dev : Initialize function is called by the proxy factory.
      * This is the "constructor" of the CS.
      * The "initializer" modifier guarantees that this function is only called once.
@@ -164,6 +179,7 @@ contract CommownSWV2 is
      */
     /// @param _owners is the owners list of the CommownSharedWallet to create
     /// @param _confirmationNeeded is the number of signatures from owners required to sign a transaction
+	/// @param _admin is the administrator of the CSW logic and the CSW Proxy Factory
     function initialize(address[] memory _owners, uint8 _confirmationNeeded, address _admin)
         public
         initializer
@@ -180,7 +196,7 @@ contract CommownSWV2 is
 		transferOwnership(_admin);
 
         //For each owner...
-        for (uint256 i; i < _owners.length; i++) {
+        for (uint8 i; i < _owners.length; i++) {
             require(_owners[i] != address(0), "owner is address(0)"); //Not the 0 address
             require(!isOwner[_owners[i]], "owner is already listed"); //Not in double
 
@@ -201,6 +217,10 @@ contract CommownSWV2 is
         override
         onlyOwner
     {}
+
+	/* ================================================================================== */
+	/* ==================================== Function ==================================== */
+	/* ================================================================================== */
 
     /// @dev to ensure the safe transfer from methods that our CSW can handle NFT and thus, they wont be stuck for ever
     function onERC721Received(
