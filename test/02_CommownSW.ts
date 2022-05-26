@@ -58,11 +58,7 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
 
         [sign0, sign1] = await ethers.getSigners();
 		bytesData = iface.encodeFunctionData("initialize", [addresses1,confirmation,sign0.address]);
-        proxyCreated = await CSWProxyFactoryContract.createProxy(
-            addresses1,
-            confirmation,
-			bytesData
-        );
+        proxyCreated = await CSWProxyFactoryContract.createProxy(bytesData);
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
             return x.event == "ProxyCreated";
@@ -106,11 +102,7 @@ describe("02_CommownSW__01_deployementAndInitializer", function () {
 	});
     it("02__01-04: it handles different state per proxy", async function () {
 		bytesData = iface.encodeFunctionData("initialize", [addresses2,confirmation,sign0.address]);
-        proxyCreated = await CSWProxyFactoryContract.createProxy(
-            addresses2,
-            confirmation,
-			bytesData
-        );
+        proxyCreated = await CSWProxyFactoryContract.createProxy(bytesData);
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
             return x.event == "ProxyCreated";
@@ -149,11 +141,7 @@ describe("02_CommownSW__02_ReceiveAndWithdrawETH", function () {
         [sign0, sign1, sign2, sign3] = await ethers.getSigners();
 
 		bytesData = iface.encodeFunctionData("initialize", [addresses1,confirmation,sign0.address]);
-        proxyCreated = await CSWProxyFactoryContract.createProxy(
-            addresses1,
-            confirmation,
-			bytesData
-        );
+        proxyCreated = await CSWProxyFactoryContract.createProxy(bytesData);
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
             return x.event == "ProxyCreated";
@@ -298,11 +286,7 @@ describe("02_CommownSW__03_createPocket", function () {
         [sign0, sign1, sign2, sign3] = await ethers.getSigners();
 
         bytesData = iface.encodeFunctionData("initialize", [addresses1,confirmation,sign0.address]);
-        proxyCreated = await CSWProxyFactoryContract.createProxy(
-            addresses1,
-            confirmation,
-			bytesData
-        );
+        proxyCreated = await CSWProxyFactoryContract.createProxy(bytesData);
         receipt = await proxyCreated.wait();
         proxyCreatedAddress = receipt.events?.filter((x) => {
             return x.event == "ProxyCreated";

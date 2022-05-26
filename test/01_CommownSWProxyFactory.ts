@@ -62,30 +62,30 @@ describe("01_CommownSWProxyFactory__02_createProxy", function () {
         bytesData = iface.encodeFunctionData("initialize", [addresses,confirmation,sign0.address]);
     });
     it("01__02-01: it deploys a proxy from sign0", async function () {
-        proxyCreated = await proxyFactory.createProxy(addresses, confirmation, bytesData);
+        proxyCreated = await proxyFactory.createProxy(bytesData);
         receipt = await proxyCreated.wait();
     });
     it("01__02-02: it deploys a proxy from sign0 and emit en event", async function () {
-        await expect(proxyFactory.createProxy(addresses, confirmation, bytesData)).to.emit(
+        await expect(proxyFactory.createProxy(bytesData)).to.emit(
             proxyFactory,
             "ProxyCreated"
         );
     });
     it("01__02-03: it deploys a proxy from sign1", async function () {
         await expect(
-            proxyFactory.connect(sign1).createProxy(addresses, confirmation, bytesData)
+            proxyFactory.connect(sign1).createProxy(bytesData)
         ).to.emit(proxyFactory, "ProxyCreated");
     });
 	it("01__02-04: it reverts if nb of confirmation = 0 or nb of confirmation > nb of owners", async function () {
 		bytesData = iface.encodeFunctionData("initialize", [addresses,0,sign0.address]);
 		await expect(
-			proxyFactory.createProxy(addresses, 0, bytesData)
+			proxyFactory.createProxy(bytesData)
         ).to.be.revertedWith(
             "invalid confirmation number"
         );
 		bytesData = iface.encodeFunctionData("initialize", [addresses,4,sign0.address]);
 		await expect(
-			proxyFactory.createProxy(addresses, 4, bytesData)
+			proxyFactory.createProxy(bytesData)
         ).to.be.revertedWith(
             "invalid confirmation number"
         );
@@ -107,7 +107,7 @@ describe("01_CommownSWProxyFactory__03_stateVariable", function () {
         [sign0, sign1] = await ethers.getSigners();
 
 		bytesData = iface.encodeFunctionData("initialize", [addresses,confirmation,sign0.address]);
-        proxyCreated = await proxyFactory.createProxy(addresses, confirmation, bytesData);
+        proxyCreated = await proxyFactory.createProxy(bytesData);
         receipt = await proxyCreated.wait();
 
         proxyCreatedAddress = receipt.events?.filter((x) => {
@@ -157,7 +157,7 @@ describe("01_CommownSWProxyFactory__03_stateVariable", function () {
 
         let proxyCreatedSign1: ContractTransaction = await proxyFactory
             .connect(sign1)
-            .createProxy(addressesSign1,confirmationSign1,bytesData);
+            .createProxy(bytesData);
         let receiptSign1: ContractReceipt = await proxyCreatedSign1.wait();
 
         let proxyCreatedAddressSign1: String = receiptSign1.events?.filter(
@@ -212,7 +212,7 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
 
 		// 2.a for sign0
 		bytesData = iface.encodeFunctionData("initialize", [addresses,confirmation,sign0.address]);
-		proxyCreatedSign0 = await proxyFactory.createProxy(addresses, confirmation, bytesData);
+		proxyCreatedSign0 = await proxyFactory.createProxy(bytesData);
         receiptSign0 = await proxyCreatedSign0.wait();
 		proxyCreatedAddressSign0 = receiptSign0.events?.filter(
             (x) => {
@@ -230,7 +230,7 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
 		bytesData = iface.encodeFunctionData("initialize", [addressesSign1,confirmationSign1,sign0.address]);
         proxyCreatedSign1 = await proxyFactory
             .connect(sign1)
-            .createProxy(addressesSign1, confirmationSign1, bytesData);
+            .createProxy(bytesData);
         receiptSign1 = await proxyCreatedSign1.wait();
 		proxyCreatedAddressSign1 = receiptSign1.events?.filter(
             (x) => {
@@ -256,9 +256,9 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
             sign0.address
         );
 
-		console.log("logicAdrs: ",logicAdrs);
+		/*console.log("logicAdrs: ",logicAdrs);
 		console.log("await CSWContractSign0.owner(): ",await CSWContractSign0.owner());
-		console.log("await CSWContractSign1.owner(): ",await CSWContractSign1.owner());
+		console.log("await CSWContractSign1.owner(): ",await CSWContractSign1.owner());*/
 
 
 		const CommownSWV2 = await ethers.getContractFactory("CommownSWV2");
@@ -306,7 +306,7 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
         ];
         const confirmationSign2 = 3;
 		bytesData = iface.encodeFunctionData("initialize", [addressesSign2,confirmationSign2,sign0.address]);
-		proxyCreatedSign2 = await proxyFactory.createProxy(addressesSign2, confirmationSign2, bytesData);
+		proxyCreatedSign2 = await proxyFactory.createProxy(bytesData);
         receiptSign2 = await proxyCreatedSign2.wait();
 		proxyCreatedAddressSign2 = receiptSign2.events?.filter(
             (x) => {
