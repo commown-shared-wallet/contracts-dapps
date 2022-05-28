@@ -18,6 +18,8 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { ERC1967Proxy, ERC1967Proxy__factory } from "../frontend/types";
 import { PocketProvider } from "@ethersproject/providers";
 import { Deferrable, parseEther } from "ethers/lib/utils";
+import { Address } from "hardhat-deploy/types";
+import internal = require("stream");
 
 let CommownSWProxyFactory: ContractFactory;
 let CSWProxyFactoryContract: Contract;
@@ -275,6 +277,13 @@ describe("02_CommownSW__03_createPocket", function () {
     let nftAdrs: string;
     let nftId: number;
     let nftQtity: number;
+	
+	let item: string;
+	let pStatus: number;
+	let pType: number;
+	let _totalAmount: number;
+	let id: number;
+	let qty: number;
     beforeEach(async function () {
         CommownSWProxyFactory = await ethers.getContractFactory(
             "CommownSWProxyFactory"
@@ -309,7 +318,7 @@ describe("02_CommownSW__03_createPocket", function () {
         nftQtity = 1;
     });
     it("02__03-01: it proposes a Pocket which can be retrieve from array", async function () {
-        const proposePocketTx = await CSWContract.proposePocket(
+        const proposePocketTx = await CSWContract.proposePocket721(
             addressTo,
             bytesData,
             totalAmount,
@@ -321,14 +330,19 @@ describe("02_CommownSW__03_createPocket", function () {
         );
         await proposePocketTx.wait();
 
-        const pocket0 = await CSWContract.pockets(0);
-        expect(pocket0.to).to.be.equal(addressTo);
-        expect(pocket0.data).to.be.equal(bytesData);
-        expect(pocket0.pStatus).to.be.equal(0);
-        expect(pocket0.totalAmount).to.be.equal(totalAmount);
+        //const pocket0 = await CSWContract.pockets(0);
+		//console.log(pocket0);
+		[item, pStatus, pType, _totalAmount, id, qty] = await CSWContract.getPocketLight(0);
+        expect(item).to.be.equal(nftAdrs);
+		expect(pStatus).to.be.equal(0);
+		expect(pType).to.be.equal(0);
+		expect(_totalAmount).to.be.equal(totalAmount);
+		expect(id).to.be.equal(nftId);
+		expect(qty).to.be.equal(nftQtity);
+        
     });
     it("02__03-02: it proposes a Pocket which can be retrieve from emitted event", async function () {
-        const proposePocketTx = await CSWContract.proposePocket(
+        const proposePocketTx = await CSWContract.proposePocket721(
             addressTo,
             bytesData,
             totalAmount,
@@ -353,7 +367,7 @@ describe("02_CommownSW__03_createPocket", function () {
     it("02__03-03: it handles all requirement and revert if not validated", async function () {
         //isCommownOwner
         await expect(
-            CSWContract.connect(sign3).proposePocket(
+            CSWContract.connect(sign3).proposePocket721(
                 addressTo,
                 bytesData,
                 totalAmount,
@@ -367,7 +381,7 @@ describe("02_CommownSW__03_createPocket", function () {
 
         //_users.length
         await expect(
-            CSWContract.proposePocket(
+            CSWContract.proposePocket721(
                 addressTo,
                 bytesData,
                 totalAmount,
@@ -381,7 +395,7 @@ describe("02_CommownSW__03_createPocket", function () {
 
         //_users.length = _sharePerUser.length
         await expect(
-            CSWContract.proposePocket(
+            CSWContract.proposePocket721(
                 addressTo,
                 bytesData,
                 totalAmount,
@@ -395,7 +409,7 @@ describe("02_CommownSW__03_createPocket", function () {
 
         //isOwner[_users[i]]
         await expect(
-            CSWContract.proposePocket(
+            CSWContract.proposePocket721(
                 addressTo,
                 bytesData,
                 totalAmount,
@@ -407,8 +421,8 @@ describe("02_CommownSW__03_createPocket", function () {
             )
         ).to.be.revertedWith("not an owner");
     });
-    it("02__03-04: it links the NFT of ERC721 to buy", async function () {
-        const proposePocketTx = await CSWContract.proposePocket(
+	it("02__03-04: creator counts for one vote", async function () {
+		const proposePocketTx = await CSWContract.proposePocket721(
             addressTo,
             bytesData,
             totalAmount,
@@ -418,14 +432,11 @@ describe("02_CommownSW__03_createPocket", function () {
             nftId,
             nftQtity
         );
-        receipt = await proposePocketTx.wait();
-
-        let pocket0created = receipt.events?.filter((x) => {
-            return x.event == "ProposePocket";
-        })[0]?.args; //?.adrs;
-        expect(pocket0created?.pocketID).to.be.equal(0);
-
-        const thatItem721 = await CSWContract.items721(0, nftAdrs, nftId);
-        expect(thatItem721).to.be.equal(nftQtity);
-    });
+        await proposePocketTx.wait();
+		
+		expect(addresses1[0]).to.be.equals(sign0.address);
+		expect(await CSWContract.isSigned(0,addresses1[0])).to.be.true;
+		expect(await CSWContract.isSigned(0,addresses1[1])).to.be.false;
+		console.log(await CSWContract.getOwnerOfPocket(0));
+	});
 });
