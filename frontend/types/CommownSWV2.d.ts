@@ -25,8 +25,6 @@ interface CommownSWV2Interface extends ethers.utils.Interface {
     "VERSION()": FunctionFragment;
     "balancePerUser(address)": FunctionFragment;
     "confirmationNeeded()": FunctionFragment;
-    "globalTotalWithdrawed()": FunctionFragment;
-    "globalWithdrawPerUser(address)": FunctionFragment;
     "initialize(address[],uint8,address)": FunctionFragment;
     "isOwner(address)": FunctionFragment;
     "isSigned(uint256,address)": FunctionFragment;
@@ -54,14 +52,6 @@ interface CommownSWV2Interface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "confirmationNeeded",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "globalTotalWithdrawed",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "globalWithdrawPerUser",
-    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
@@ -139,14 +129,6 @@ interface CommownSWV2Interface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "confirmationNeeded",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "globalTotalWithdrawed",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "globalWithdrawPerUser",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
@@ -319,13 +301,6 @@ export class CommownSWV2 extends BaseContract {
 
     confirmationNeeded(overrides?: CallOverrides): Promise<[number]>;
 
-    globalTotalWithdrawed(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    globalWithdrawPerUser(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
@@ -426,13 +401,6 @@ export class CommownSWV2 extends BaseContract {
 
   confirmationNeeded(overrides?: CallOverrides): Promise<number>;
 
-  globalTotalWithdrawed(overrides?: CallOverrides): Promise<BigNumber>;
-
-  globalWithdrawPerUser(
-    arg0: string,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
   initialize(
     _owners: string[],
     _confirmationNeeded: BigNumberish,
@@ -532,13 +500,6 @@ export class CommownSWV2 extends BaseContract {
     balancePerUser(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     confirmationNeeded(overrides?: CallOverrides): Promise<number>;
-
-    globalTotalWithdrawed(overrides?: CallOverrides): Promise<BigNumber>;
-
-    globalWithdrawPerUser(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
 
     initialize(
       _owners: string[],
@@ -814,13 +775,6 @@ export class CommownSWV2 extends BaseContract {
 
     confirmationNeeded(overrides?: CallOverrides): Promise<BigNumber>;
 
-    globalTotalWithdrawed(overrides?: CallOverrides): Promise<BigNumber>;
-
-    globalWithdrawPerUser(
-      arg0: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
@@ -914,15 +868,6 @@ export class CommownSWV2 extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     confirmationNeeded(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    globalTotalWithdrawed(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    globalWithdrawPerUser(
-      arg0: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

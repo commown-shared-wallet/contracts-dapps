@@ -22,7 +22,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
   functions: {
     "commownProxiesPerUser(address,uint256)": FunctionFragment;
-    "createProxy(address[],uint8,bytes)": FunctionFragment;
+    "createProxy(bytes)": FunctionFragment;
     "defineNewLogic(address)": FunctionFragment;
     "logic()": FunctionFragment;
     "nbProxiesPerUser(address)": FunctionFragment;
@@ -38,7 +38,7 @@ interface CommownSWProxyFactoryInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createProxy",
-    values: [string[], BigNumberish, BytesLike]
+    values: [BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "defineNewLogic",
@@ -162,8 +162,6 @@ export class CommownSWProxyFactory extends BaseContract {
     ): Promise<[string]>;
 
     createProxy(
-      _owners: string[],
-      _confirmationNeeded: BigNumberish,
       _data: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -204,8 +202,6 @@ export class CommownSWProxyFactory extends BaseContract {
   ): Promise<string>;
 
   createProxy(
-    _owners: string[],
-    _confirmationNeeded: BigNumberish,
     _data: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -239,12 +235,7 @@ export class CommownSWProxyFactory extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string>;
 
-    createProxy(
-      _owners: string[],
-      _confirmationNeeded: BigNumberish,
-      _data: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<string>;
+    createProxy(_data: BytesLike, overrides?: CallOverrides): Promise<string>;
 
     defineNewLogic(_contract: string, overrides?: CallOverrides): Promise<void>;
 
@@ -303,8 +294,6 @@ export class CommownSWProxyFactory extends BaseContract {
     ): Promise<BigNumber>;
 
     createProxy(
-      _owners: string[],
-      _confirmationNeeded: BigNumberish,
       _data: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -346,8 +335,6 @@ export class CommownSWProxyFactory extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     createProxy(
-      _owners: string[],
-      _confirmationNeeded: BigNumberish,
       _data: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
