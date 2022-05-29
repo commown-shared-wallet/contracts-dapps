@@ -17,6 +17,9 @@ async function main() {
     // 2. Update CommownSWProxyFactory.sol to create new proxies with the new implementation address get on the first step
     // 3. Get all the proxies currently deployed
     // 4. Update for all the proxies the new implementation address get on the first step
+
+	// All steps are tested in the test 01_CommownSWProxyFactory.ts
+	
 }
 
 // We recommend this pattern to be able to use async/await everywhere
