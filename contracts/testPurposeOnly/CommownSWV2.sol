@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "../CommownSWPocket.sol";
 import "../CommownSWUtils.sol";
 
+
 /// @title Commown Shared Wallet
 /// @author Aurélien ALBE - Younès MANJAL 😎
 /// @notice Main logic contract : Commown Shared Wallet
@@ -46,6 +47,7 @@ contract CommownSWV2 is
 
     /// @dev pockets list, usefull to get the id
     CommownSWPocket[] public pockets;
+	address[] public test;
 
     /// @dev Utility mapping to check if an address is owner of that CSW
     mapping(address => bool) public isOwner;
@@ -125,6 +127,7 @@ contract CommownSWV2 is
         address to,
         bytes data,
         PocketStatus pStatus,
+		PocketType pType,
         uint256 totalAmount,
         uint256[] sharePerUser
     );
@@ -282,35 +285,34 @@ contract CommownSWV2 is
     /// @param _sharePerUser uint256 share per users of the pocket. That share property will be used to determine which amount is delivered to which address once a sell happens.
     /// @param _nftAdrs address of the NFT contract
     /// @param _nftId uint256 ID of the NFT
-    /// @param _nftQtity uint256 quantity of the NFT
     function proposePocket721(
         address _to,
         bytes  memory _data,
         uint256 _totalAmount,
-        address[] memory _users,
-        uint256[] memory _sharePerUser,
+        address[] calldata _users,
+        uint256[] calldata _sharePerUser,
         address _nftAdrs,
-        uint256 _nftId,
-        uint256 _nftQtity
+        uint256 _nftId
     ) external isCommownOwner(msg.sender) {
-        require(_users.length > 0, "owners required");
-        require(_users.length == _sharePerUser.length, "length mismatch");
+		uint8 lgth = uint8(_users.length);
+        require(lgth > 0, "owners required");
+        require(lgth == _sharePerUser.length, "length mismatch");
 
         pocketMaxID = pockets.length; //ID of the pocket
 		
 		//For each user
-        for (uint8 i; i < _users.length; i++) {
+        for (uint8 i; i < lgth; i++) {
             require(isOwner[_users[i]], "not an owner"); //Revert if not a user
 			sharePerUser[pocketMaxID][_users[i]]=_sharePerUser[i];
         }
 
-        pockets.push(new CommownSWPocket(
+		pockets.push(new CommownSWPocket(
 			_to,
 			_nftAdrs,
 			_data,
 			_totalAmount,
 			_nftId,
-			_nftQtity,
+			1,
 			PocketType.token721
 		)); //Push the new pocket to the list
 		
@@ -322,18 +324,22 @@ contract CommownSWV2 is
             pocketMaxID,
             _to,
             _data,
-            PocketStatus.Proposed,
+            PocketStatus.Voting,
+			PocketType.token721,
             _totalAmount,
             _sharePerUser
         ); //Emit the event
     }
 
-	function voteForPocket(uint256 _pocketID) public isCommownOwner(msg.sender) pocketExists(_pocketID) pocketNotSigned(_pocketID,msg.sender) {
+	function voteForPocket(uint256 _pocketID) public isCommownOwner(msg.sender) pocketExists(_pocketID) pocketNotSigned(_pocketID,msg.sender) pocketAtStage(_pocketID,PocketStatus.Voting){
 		numConfirmations[_pocketID]+=1;
 		isSigned[_pocketID][msg.sender]=true;
 		emit VotePocket(msg.sender, _pocketID, numConfirmations[_pocketID]);
 	}
 
+	function getOwnerOfPocket(uint256 _pocketID) public view returns(address){
+		return pockets[_pocketID].owner();
+	}
 
 	/* ================================================================================== */
 	/* ==================================== Helper ====================================== */

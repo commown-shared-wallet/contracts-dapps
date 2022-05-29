@@ -2,7 +2,6 @@
 pragma solidity 0.8.13;
 
 	enum PocketStatus {
-        Proposed,
 		Voting,
         Signing,
         Executed

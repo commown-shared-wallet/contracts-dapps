@@ -5,7 +5,6 @@ chai.use(solidity);
 
 import "@nomiclabs/hardhat-ethers";
 import { ethers, upgrades } from "hardhat";
-import { CommownSWProxyFactoryInterface } from "../frontend/types/CommownSWProxyFactory";
 import {
     Contract,
     ContractFactory,
@@ -31,7 +30,7 @@ let bytesData: string;
 let ABITest = ["function initialize(address[] memory _owners, uint8 _confirmationNeeded, address _admin)"];
 let iface = new ethers.utils.Interface(ABITest);
 
-describe("01_CommownSWProxyFactory__01_deployProxyFactory", function () {
+/*describe("01_CommownSWProxyFactory__01_deployProxyFactory", function () {
     it("01__01_01: it deploys the CommownSWProxyFactory and the CommownSW", async function () {
         CommownSWProxyFactory = await ethers.getContractFactory(
             "CommownSWProxyFactory"
@@ -260,7 +259,7 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
 		console.log("await CSWContractSign0.owner(): ",await CSWContractSign0.owner());
 		console.log("await CSWContractSign1.owner(): ",await CSWContractSign1.owner());*/
 
-
+/*
 		const CommownSWV2 = await ethers.getContractFactory("CommownSWV2");
 		const proxyListToUpdate = [proxyCreatedAddressSign0,proxyCreatedAddressSign1];
 
@@ -274,9 +273,9 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
 			console.log(
 				"CommownSW's Implementation (main contract) deployed to: ",
 				await upgrades.erc1967.getImplementationAddress(proxy.address)
-			);*/
+			);*//*
 		}
-    });
+    });/*
 
 	it("01__04_02: it updates the CSW logic address in the Factory contract and new users can use it to create new proxy (CSW)", async function () {
         const CommownSWV2 = await ethers.getContractFactory("CommownSWV2");
@@ -356,3 +355,4 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
     });
 });
 
+*/

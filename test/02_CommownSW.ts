@@ -15,8 +15,6 @@ import {
     Transaction,
 } from "ethers";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { ERC1967Proxy, ERC1967Proxy__factory } from "../frontend/types";
-import { PocketProvider } from "@ethersproject/providers";
 import { Deferrable, parseEther } from "ethers/lib/utils";
 import { Address } from "hardhat-deploy/types";
 import internal = require("stream");
@@ -316,6 +314,7 @@ describe("02_CommownSW__03_createPocket", function () {
         nftAdrs = "0xd9145CCE52D386f254917e481eB44e9943F39138";
         nftId = 1;
         nftQtity = 1;
+		
     });
     it("02__03-01: it proposes a Pocket which can be retrieve from array", async function () {
         const proposePocketTx = await CSWContract.proposePocket721(
@@ -325,8 +324,7 @@ describe("02_CommownSW__03_createPocket", function () {
             addresses1,
             [25, 50, 25],
             nftAdrs,
-            nftId,
-            nftQtity
+            nftId
         );
         await proposePocketTx.wait();
 
@@ -349,8 +347,7 @@ describe("02_CommownSW__03_createPocket", function () {
             addresses1,
             [25, 50, 25],
             nftAdrs,
-            nftId,
-            nftQtity
+            nftId
         );
         receipt = await proposePocketTx.wait();
 
@@ -374,8 +371,7 @@ describe("02_CommownSW__03_createPocket", function () {
                 addresses1,
                 [25, 50, 25],
                 nftAdrs,
-                nftId,
-                nftQtity
+                nftId
             )
         ).to.be.revertedWith("not an owner");
 
@@ -388,8 +384,7 @@ describe("02_CommownSW__03_createPocket", function () {
                 [],
                 [25, 50, 25],
                 nftAdrs,
-                nftId,
-                nftQtity
+                nftId
             )
         ).to.be.revertedWith("owners required");
 
@@ -402,8 +397,7 @@ describe("02_CommownSW__03_createPocket", function () {
                 addresses1,
                 [25, 50],
                 nftAdrs,
-                nftId,
-                nftQtity
+                nftId
             )
         ).to.be.revertedWith("length mismatch");
 
@@ -416,8 +410,7 @@ describe("02_CommownSW__03_createPocket", function () {
                 ["0xd9145CCE52D386f254917e481eB44e9943F39138"],
                 [25],
                 nftAdrs,
-                nftId,
-                nftQtity
+                nftId
             )
         ).to.be.revertedWith("not an owner");
     });
@@ -429,14 +422,151 @@ describe("02_CommownSW__03_createPocket", function () {
             addresses1,
             [25, 50, 25],
             nftAdrs,
-            nftId,
-            nftQtity
+            nftId
         );
         await proposePocketTx.wait();
 		
 		expect(addresses1[0]).to.be.equals(sign0.address);
 		expect(await CSWContract.isSigned(0,addresses1[0])).to.be.true;
 		expect(await CSWContract.isSigned(0,addresses1[1])).to.be.false;
-		console.log(await CSWContract.getOwnerOfPocket(0));
+		expect(await CSWContract.isSigned(0,sign0.address)).to.be.true;
+		expect(await CSWContract.isSigned(0,sign1.address)).to.be.false;
+		//console.log(await CSWContract.getOwnerOfPocket(0));
 	});
+	it("02__03-05: it saves the share per user correctly", async function () {
+        const proposePocketTx = await CSWContract.proposePocket721(
+            addressTo,
+            bytesData,
+            totalAmount,
+            addresses1,
+            [25, 50, 25],
+            nftAdrs,
+            nftId
+        );
+        await proposePocketTx.wait();
+		
+        expect(await CSWContract.sharePerUser(0,sign0.address)).to.be.equal(25);
+		expect(await CSWContract.sharePerUser(0,sign1.address)).to.be.equal(50);
+		expect(await CSWContract.sharePerUser(0,sign2.address)).to.be.equal(25);
+    });
+	it("02__03-06: it votes", async function(){
+		await expect(
+			CSWContract.voteForPocket(1)
+		).to.be.revertedWith("No such pocket exists");
+
+		const proposePocketTx = await CSWContract.proposePocket721(
+            addressTo,
+            bytesData,
+            totalAmount,
+            addresses1,
+            [25, 50, 25],
+            nftAdrs,
+            nftId
+        );
+        await proposePocketTx.wait();
+
+		await expect(
+			CSWContract.voteForPocket(1)
+		).to.be.revertedWith("No such pocket exists");
+
+	});
+});
+
+
+describe("02_CommownSW__04_votePocket", function () {
+    let addressTo: string;
+    let bytesData: string;
+    let totalAmount: number;
+    let nftAdrs: string;
+    let nftId: number;
+    let nftQtity: number;
+	
+	beforeEach(async function () {
+        CommownSWProxyFactory = await ethers.getContractFactory(
+            "CommownSWProxyFactory"
+        );
+        CSWProxyFactoryContract = await CommownSWProxyFactory.deploy();
+        await CSWProxyFactoryContract.deployed();
+        expect(await CSWProxyFactoryContract.logic()).to.be.not.undefined;
+
+        [sign0, sign1, sign2, sign3] = await ethers.getSigners();
+
+        bytesData = iface.encodeFunctionData("initialize", [addresses1,confirmation,sign0.address]);
+        proxyCreated = await CSWProxyFactoryContract.createProxy(bytesData);
+        receipt = await proxyCreated.wait();
+        proxyCreatedAddress = receipt.events?.filter((x) => {
+            return x.event == "ProxyCreated";
+        })[0]?.args?.adrs;
+
+        expect(proxyCreatedAddress).to.be.not.undefined;
+
+        CommownSW = await ethers.getContractFactory("CommownSW");
+        CSWContract = CommownSW.attach(proxyCreatedAddress);
+
+        addressTo = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+        totalAmount = 100;
+        let ABITestTmp = ["function callMe(uint x) "];
+        let ifaceEth = new ethers.utils.Interface(ABITestTmp);
+        bytesData = ifaceEth.encodeFunctionData("callMe", [2]);
+        
+        nftAdrs = "0xd9145CCE52D386f254917e481eB44e9943F39138";
+        nftId = 1;
+        nftQtity = 1;
+		
+		const proposePocketTx = await CSWContract.proposePocket721(
+            addressTo,
+            bytesData,
+            totalAmount,
+            addresses1,
+            [25, 50, 25],
+            nftAdrs,
+            nftId
+        );
+        await proposePocketTx.wait();
+    });
+	it("02__04-01: it can vote for a Pocket, increments number of vote, isSigned becomes true", async function () {
+		expect(await CSWContract.numConfirmations(0)).to.be.equal(1);
+		expect(await CSWContract.isSigned(0,sign0.address)).to.be.true;
+
+		const voteTx = await CSWContract.connect(sign1).voteForPocket(0);
+		await voteTx.wait();
+
+		expect(await CSWContract.numConfirmations(0)).to.be.equal(2);
+		expect(await CSWContract.isSigned(0,sign1.address)).to.be.true;
+		expect(await CSWContract.isSigned(0,sign2.address)).to.be.false;
+		
+    });
+    it("02__04-02: it reverts if not an owner", async function () {
+        await expect(
+            CSWContract.connect(sign3).voteForPocket(0)
+        ).to.be.revertedWith("not an owner");
+	});
+	it("02__04-03: it reverts if not an existing pocket", async function(){
+		await expect(
+			CSWContract.voteForPocket(1)
+		).to.be.revertedWith("No such pocket exists");
+	});
+	it("02__04-04: it reverts if pocket already signed", async function () {
+		await expect(
+			CSWContract.voteForPocket(0)
+		).to.be.revertedWith("already signed");
+	});
+	it("02__04-05: it reverts if not at the good stage", async function(){
+		
+	});
+
+	/*it("02__04-05: it reverts if not a share holder of the commown owner", async function () {
+        //notAnyShare
+        await expect(
+            CSWContract.proposePocket721(
+                addressTo,
+                bytesData,
+                totalAmount,
+                ["0xd9145CCE52D386f254917e481eB44e9943F39138"],
+                [25],
+                nftAdrs,
+                nftId
+            )
+        ).to.be.revertedWith("not an owner");
+    });*/
 });
