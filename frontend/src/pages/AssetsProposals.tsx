@@ -58,7 +58,6 @@ import {
     Slider,
     Accordion,
     Box,
-    InputProps,
 } from "@mantine/core";
 import { useForm, joiResolver } from "@mantine/form";
 import { hideNotification, useNotifications } from "@mantine/notifications";
