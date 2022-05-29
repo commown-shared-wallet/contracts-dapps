@@ -32,6 +32,12 @@ contract CommownSW is
 	/* ================================================================================== */
 	
 
+	/// @dev Share for a user for a given pocket
+	struct ShareStruct {
+			address user;
+			uint256 share;
+	}
+
 	/* ================================================================================== */
 	/* ==================================== Enums ======================================= */
 	/* ================================================================================== */
@@ -129,7 +135,7 @@ contract CommownSW is
         PocketStatus pStatus,
 		PocketType pType,
         uint256 totalAmount,
-        uint256[] sharePerUser
+        ShareStruct[] sharePerUser
     );
 
 	event VotePocket(
@@ -191,7 +197,7 @@ contract CommownSW is
 		transferOwnership(_admin);
 
         //For each owner...
-        for (uint8 i; i < _owners.length; i++) {
+        for (uint8 i; i < size; i++) {
             require(_owners[i] != address(0), "owner is address(0)"); //Not the 0 address
             require(!isOwner[_owners[i]], "owner is already listed"); //Not in double
 
@@ -250,7 +256,6 @@ contract CommownSW is
      */
     /// @param _amount of ETH to withdraw
     function withdraw(uint256 _amount) public isCommownOwner(msg.sender) {
-        require(balancePerUser[msg.sender] > 0, "balance eq 0"); //Todo : virer ce require
         require(_amount > 0, "amount eq 0");
         require(_amount <= balancePerUser[msg.sender], "too big amount");
 
@@ -267,7 +272,7 @@ contract CommownSW is
         ); //Emit the event
     }
 
-    // signPocket
+    
     // fundPocket
     // revokeFundPocket
     // revokeSignPocket
@@ -279,66 +284,77 @@ contract CommownSW is
     /// @notice propose a pocket of investment for exemple to buy a NFT.
     /// @dev This is the main tool of that CSW. The address of the NFT contract, the NFT's ID and the amount to reach before buying are required
     /// @param _to address to which will be called once the amount of the pocket is reach and once the signatures are acquired
-    /// @param _data data bytes which will be called once the amount of the pocket is reach and once the signatures are acquired
-    /// @param _totalAmount uint256 amount to reach to process the futur transaction
-    /// @param _users addresses of the owners. It is used in consort with the _sharePerUser to ensure the share for each user is well define
-    /// @param _sharePerUser uint256 share per users of the pocket. That share property will be used to determine which amount is delivered to which address once a sell happens.
-    /// @param _nftAdrs address of the NFT contract
-    /// @param _nftId uint256 ID of the NFT
-    function proposePocket721(
+    /// @param _data bytes which will be called once the amount of the pocket is reach and once the signatures are acquired
+    /// @param _totalAmount amount to reach to process the futur transaction
+    /// @param _shares ShareStruct containing for each user the share of the pocket
+    /// @param _tokenAdrs address of the token : it can be a NFT contract 720 1155 or an ERC20
+    /// @param _tokenId ID of the NFT : it can be an id of a NFT contract 720 or 1155
+	/// @param _tokenQty Quantity of the token : it can be 1 for 720NFT, or qtity for 1155 or token ERC20
+	/// @param pType 0 = ERC721 ; 1 = ERC1155 ; 2 = ERC20
+    function proposePocket(
         address _to,
         bytes  memory _data,
         uint256 _totalAmount,
-        address[] calldata _users,
-        uint256[] calldata _sharePerUser,
-        address _nftAdrs,
-        uint256 _nftId
+		ShareStruct[] calldata _shares,
+        address _tokenAdrs,
+        uint256 _tokenId,
+		uint256 _tokenQty,
+		PocketType pType
     ) external isCommownOwner(msg.sender) {
-		uint8 lgth = uint8(_users.length);
-        require(lgth > 0, "owners required");
-        require(lgth == _sharePerUser.length, "length mismatch");
-
-        pocketMaxID = pockets.length; //ID of the pocket
+		uint256 lgth = _shares.length;
+        require(lgth > 0 && lgth <= 255, "0-255 shares required");
+		
+		//ID of the pocket
+		pocketMaxID = pockets.length;
 		
 		//For each user
         for (uint8 i; i < lgth; i++) {
-            require(isOwner[_users[i]], "not an owner"); //Revert if not a user
-			sharePerUser[pocketMaxID][_users[i]]=_sharePerUser[i];
+            //Revert if not an owner
+			require(isOwner[_shares[i].user], "not an owner");
+			//Saves the share per user
+			sharePerUser[pocketMaxID][_shares[i].user]=_shares[i].share;
         }
-
+		
+		//Push the new pocket to the list
 		pockets.push(new CommownSWPocket(
 			_to,
-			_nftAdrs,
+			_tokenAdrs,
 			_data,
 			_totalAmount,
-			_nftId,
-			1,
-			PocketType.token721
-		)); //Push the new pocket to the list
+			_tokenId,
+			_tokenQty,
+			pType
+		));
 		
-		numConfirmations[pocketMaxID]=1;
-        isSigned[pocketMaxID][msg.sender]=true;
-
+		//Emit the event
 		emit ProposePocket(
             msg.sender,
             pocketMaxID,
             _to,
             _data,
             PocketStatus.Voting,
-			PocketType.token721,
+			pType,
             _totalAmount,
-            _sharePerUser
-        ); //Emit the event
+            _shares
+        );
+		
+		//By creating a pocket the user votes for it directly
+		voteForPocket(pocketMaxID);
     }
 
+	/// @notice Vote for a pocket, requires to be a CSW owner, that the pocket exists, only one vote per person, pocket stages has to be at Voting
+	/// @param _pocketID ID of the pocket to vote for
 	function voteForPocket(uint256 _pocketID) public isCommownOwner(msg.sender) pocketExists(_pocketID) pocketNotSigned(_pocketID,msg.sender) pocketAtStage(_pocketID,PocketStatus.Voting){
+		require(numConfirmations[_pocketID]<confirmationNeeded,"already confirmed");
+
 		numConfirmations[_pocketID]+=1;
 		isSigned[_pocketID][msg.sender]=true;
+		
+		if(numConfirmations[_pocketID]==confirmationNeeded){
+			pockets[_pocketID].setStatus(PocketStatus.ToExecute);
+		}
+		
 		emit VotePocket(msg.sender, _pocketID, numConfirmations[_pocketID]);
-	}
-
-	function getOwnerOfPocket(uint256 _pocketID) public view returns(address){
-		return pockets[_pocketID].owner();
 	}
 
 	/* ================================================================================== */
@@ -357,23 +373,4 @@ contract CommownSW is
 		CommownSWPocket p = pockets[_pocketID];
 		return(p.item(), p.pStatus(), p.pType(), p.totalAmount(), p.id(), p.qty());
 	}
-
-
-    //Callable after a pocketSell
-    // function withdrawPocket(uint256 _pocketID, uint256 _sellPrice) private pocketExists(_pocketID) {
-    // 	//Alice 40
-    // 	//Bob 60
-    // 	//10 eth => 100 eth
-    // 	// A 40/(40+60) * sell amount et B 60/(40+60)
-    // 	uint256 totalWithdrawed;
-    // 	uint256 toPay;
-    // 	for(uint i;i<)
-    // 		toPay = (totalWithdrawed + totalsharePerUser[_pocketID][msg.sender])
-
-    // 	uint256 toPay = ((address(this).balance + totalAlreadyWithdrawed) * sharePerUser[msg.sender]) / totalShares - withdrawPerUser[msg.sender];
-    // 	require(toPay>0,"Nothing to pay");
-
-    // 	totalAlreadyWithdrawed += toPay;
-    // 	withdrawPerUser[msg.sender] += toPay;
-    // }
 }

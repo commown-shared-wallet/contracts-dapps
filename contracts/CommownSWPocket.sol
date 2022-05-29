@@ -37,4 +37,9 @@ contract CommownSWPocket {
 		pType = _pType;
 	}
 
+	function setStatus(PocketStatus _status) public {
+		require(msg.sender == owner,"not able to call");
+		pStatus=_status;
+	}
+
 }
