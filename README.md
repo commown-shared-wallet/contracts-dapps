@@ -55,10 +55,12 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 | [v1.1.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.1.0) | 👛 Connecting to a wallet                              |   ✅   |
 | [v1.2.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.2.0) | 📦 Creating a CommOwn Shared Wallet & Funds management |   ✅   |
 | [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Create Pocket & Visualize your assets               |   ✅   |
-| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 NFT Proposals & Refactoring Pockets                 |   🔁   |
-|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                                  |   🚧   |
-|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 Resale of NFT                                     |   🚧   |
-|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                                     |   🚧   |
+| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 NFT Proposals & Refactoring Pockets                 |   ✅   |
+|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🛠️ Security amelioration                                  |   ✅   |
+|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 State management with redux         |   🚧   |
+|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                                     |   🚧   |
+|   [v1.8.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Resale of NFT                                                               |   🚧   |
+|   [v1.9.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                                     |   🚧   |
 
 ## Directory Structure <a name="directory-sructure"></a>
 
