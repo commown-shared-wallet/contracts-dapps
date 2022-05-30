@@ -192,12 +192,14 @@ function AssetsProposals() {
     }, [nftAddress, chainId]);
 
     useLayoutEffect(() => {
-        if (form.values.nftUrl && form.values.nftUrl != "") {
-            const parseUrl = parseUrlOfOpenSea("721", form.values.nftUrl);
-            setNftAddress(parseUrl ? parseUrl.address : "");
-            setNftId(parseUrl ? parseUrl.id : "");
-            fetchDataOfNft();
-        }
+        (async function () {
+            if (form.values.nftUrl && form.values.nftUrl != "") {
+                const parseUrl = parseUrlOfOpenSea("721", form.values.nftUrl);
+                setNftAddress(parseUrl ? parseUrl.address : "");
+                setNftId(parseUrl ? parseUrl.id : "");
+                await fetchDataOfNft();
+            }
+        })();
     }, [fetchDataOfNft, form.values.nftUrl]);
 
     /* components */

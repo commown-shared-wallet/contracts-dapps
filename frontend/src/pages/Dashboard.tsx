@@ -2,12 +2,13 @@
  * * React Utils
  */
 import { useCallback, useEffect, useState } from "react";
-import { useAppSelector } from "@hooks/useRedux";
+import { useAppDispatch, useAppSelector } from "@hooks/useRedux";
 import { useCommownSW } from "@hooks/useCommownSW";
 import { useCopy } from "@hooks/useCopy";
 import { ellipsisAddress } from "@utils/pipes";
 import { SnippetAccordion } from "@components/SnippetAccordion";
 import { IUsersCSW } from "@interfaces/events";
+import { updateUsersBalance } from "store/users";
 
 /*
  * * Mantine UI Library
@@ -40,11 +41,12 @@ import {
 import { useWeb3React } from "@web3-react/core";
 import useContract from "@hooks/useContract";
 import { ethers } from "ethers";
-import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
+import { toast } from "react-toastify";
 
 function Dashboard() {
     /* React */
     const usersOfCSW = useAppSelector((state) => state.users);
+    const dispatch = useAppDispatch();
 
     const [copyElement] = useCopy();
     const [write, read] = useContract();
@@ -117,24 +119,36 @@ function Dashboard() {
 
     // Users Balance
     const fetchSummaryOfBalance = useCallback(async () => {
-        if (usersOfCSW && usersContractCommownSW) {
+        if (usersContractCommownSW) {
             const resultOwnersWallet: Array<any> = [];
 
             usersOfCSW.map(async (owners) => {
                 const { address, balance } = owners;
+
+                const balanceOfUser =
+                    await usersContractCommownSW.balancePerUser(address);
+                dispatch(
+                    updateUsersBalance({
+                        sender: address,
+                        balance: ethers.utils.formatEther(balanceOfUser),
+                    })
+                );
                 resultOwnersWallet.push({
                     assets: "ETH",
                     address: ellipsisAddress(address, 10, 8),
-                    userBalance: balance,
+                    userBalance: ethers.utils.formatEther(balanceOfUser),
                 });
             });
-
             setUsersOfWallet(resultOwnersWallet);
         }
-    }, [usersOfCSW, account, chainId, eventDeposit]);
+    }, [eventDeposit, usersContractCommownSW]);
 
     useEffect(() => {
-        fetchSummaryOfBalance().catch(console.error);
+        try {
+            fetchSummaryOfBalance();
+        } catch (error) {
+            toast.error("Error fetch Summary Of Balance");
+        }
     }, [fetchSummaryOfBalance, usersContractCommownSW]);
 
     async function receiveFunds() {
