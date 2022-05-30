@@ -40,6 +40,7 @@ import {
 import { useWeb3React } from "@web3-react/core";
 import useContract from "@hooks/useContract";
 import { ethers } from "ethers";
+import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
 
 function Dashboard() {
     /* React */
@@ -108,7 +109,7 @@ function Dashboard() {
             setUserBalance(currentBalance);
             setLastDepositEvents(lastTransactions);
         }
-    }, [eventDeposit, account, chainId]);
+    }, [eventDeposit, account, chainId, usersContractCommownSW]);
 
     useEffect(() => {
         fetchUsersBalance().catch(console.error);
@@ -134,7 +135,7 @@ function Dashboard() {
 
     useEffect(() => {
         fetchSummaryOfBalance().catch(console.error);
-    }, [fetchSummaryOfBalance]);
+    }, [fetchSummaryOfBalance, usersContractCommownSW]);
 
     async function receiveFunds() {
         if (active) {

@@ -98,7 +98,7 @@ export function useCommownSW() {
 
     const fetchEventsProxyCreated = useCallback(async () => {
         if (contract) contract.on("ProxyCreated", handleProxyCreated);
-    }, []);
+    }, [proxyAddressOfUser, fetchContractProxy]);
 
     const fetchUsers = useCallback(async () => {
         const usersJSON = localStorage.getItem("usersOfWallet");
@@ -110,7 +110,7 @@ export function useCommownSW() {
                     payload: users.owners,
                 });
             */
-    }, []);
+    }, [proxyAddressOfUser]);
 
     useEffect(() => {
         try {

@@ -252,13 +252,11 @@ function AssetsProposals() {
                 const totalAmount: number = form.values.totalAmount
                     ? form.values.totalAmount
                     : 0; //amount to be reached to process the future transaction
-                const sharePerUser: Array<number> = [];
-                const usersAddress: Array<string> = [];
+                const usersAndShares: Array<any> = [];
 
                 usersWithShare.map((user) => {
                     const { address, share } = user;
-                    usersAddress.push(address);
-                    sharePerUser.push(share);
+                    usersAndShares.push([address, share]);
                 });
 
                 await write(
@@ -267,11 +265,11 @@ function AssetsProposals() {
                               addressTransmitterTransaction,
                               _data,
                               totalAmount,
-                              usersAddress,
-                              sharePerUser,
+                              usersAndShares,
                               nftAddress,
                               nftId,
-                              nftQtity
+                              nftQtity,
+                              0
                           )
                         : "",
                     "Creation of pockets",

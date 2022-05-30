@@ -68,7 +68,7 @@ function BalancesCoins() {
             }
         };
         fetchData();
-    }, [walletBalance]);
+    }, [walletBalance, usersContractCommownSW]);
 
     return (
         <div>
