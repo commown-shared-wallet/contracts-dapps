@@ -4,9 +4,7 @@ import { solidity } from "ethereum-waffle";
 chai.use(solidity);
 
 import "@nomiclabs/hardhat-ethers";
-import { ethers } from "hardhat";
-import CommownSWProxyFactoryJSON from "../frontend/artifacts/contracts/CommownSWProxyFactory.sol/CommownSWProxyFactory.json";
-import CommownSWJSON from "../frontend/artifacts/contracts/CommownSW.sol/CommownSW.json";
+import { ethers, upgrades } from "hardhat";
 import { CommownSWProxyFactoryInterface } from "../frontend/types/CommownSWProxyFactory";
 import {
     Contract,
@@ -18,6 +16,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 let CommownSWProxyFactory: ContractFactory;
 let proxyFactory: Contract;
+let CommownSW: ContractFactory;
 let sign0: SignerWithAddress;
 let sign1: SignerWithAddress;
 let sign2: SignerWithAddress;
@@ -28,8 +27,12 @@ const addresses = [
 ];
 const confirmation = 2;
 
+let bytesData: string;
+let ABITest = ["function initialize(address[] memory _owners, uint8 _confirmationNeeded, address _admin)"];
+let iface = new ethers.utils.Interface(ABITest);
+
 describe("01_CommownSWProxyFactory__01_deployProxyFactory", function () {
-    it("01_01_01: it deploys the CommownSWProxyFactory and the CommownSW", async function () {
+    it("01__01_01: it deploys the CommownSWProxyFactory and the CommownSW", async function () {
         CommownSWProxyFactory = await ethers.getContractFactory(
             "CommownSWProxyFactory"
         );
@@ -47,39 +50,42 @@ describe("01_CommownSWProxyFactory__01_deployProxyFactory", function () {
 describe("01_CommownSWProxyFactory__02_createProxy", function () {
     let proxyCreated: ContractTransaction;
     let receipt: ContractReceipt;
-    beforeEach(async function () {
+
+	beforeEach(async function () {
         CommownSWProxyFactory = await ethers.getContractFactory(
             "CommownSWProxyFactory"
         );
         proxyFactory = await CommownSWProxyFactory.deploy();
-
         await proxyFactory.deployed();
 
         [sign0, sign1] = await ethers.getSigners();
+        bytesData = iface.encodeFunctionData("initialize", [addresses,confirmation,sign0.address]);
     });
     it("01__02-01: it deploys a proxy from sign0", async function () {
-        proxyCreated = await proxyFactory.createProxy(addresses, confirmation);
+        proxyCreated = await proxyFactory.createProxy(bytesData);
         receipt = await proxyCreated.wait();
     });
     it("01__02-02: it deploys a proxy from sign0 and emit en event", async function () {
-        await expect(proxyFactory.createProxy(addresses, confirmation)).to.emit(
+        await expect(proxyFactory.createProxy(bytesData)).to.emit(
             proxyFactory,
             "ProxyCreated"
         );
     });
     it("01__02-03: it deploys a proxy from sign1", async function () {
         await expect(
-            proxyFactory.connect(sign1).createProxy(addresses, confirmation)
+            proxyFactory.connect(sign1).createProxy(bytesData)
         ).to.emit(proxyFactory, "ProxyCreated");
     });
 	it("01__02-04: it reverts if nb of confirmation = 0 or nb of confirmation > nb of owners", async function () {
+		bytesData = iface.encodeFunctionData("initialize", [addresses,0,sign0.address]);
 		await expect(
-			proxyFactory.createProxy(addresses, 0)
+			proxyFactory.createProxy(bytesData)
         ).to.be.revertedWith(
             "invalid confirmation number"
         );
+		bytesData = iface.encodeFunctionData("initialize", [addresses,4,sign0.address]);
 		await expect(
-			proxyFactory.createProxy(addresses, 4)
+			proxyFactory.createProxy(bytesData)
         ).to.be.revertedWith(
             "invalid confirmation number"
         );
@@ -96,12 +102,12 @@ describe("01_CommownSWProxyFactory__03_stateVariable", function () {
             "CommownSWProxyFactory"
         );
         proxyFactory = await CommownSWProxyFactory.deploy();
-
         await proxyFactory.deployed();
 
         [sign0, sign1] = await ethers.getSigners();
 
-        proxyCreated = await proxyFactory.createProxy(addresses, confirmation);
+		bytesData = iface.encodeFunctionData("initialize", [addresses,confirmation,sign0.address]);
+        proxyCreated = await proxyFactory.createProxy(bytesData);
         receipt = await proxyCreated.wait();
 
         proxyCreatedAddress = receipt.events?.filter((x) => {
@@ -147,10 +153,11 @@ describe("01_CommownSWProxyFactory__03_stateVariable", function () {
             "0xdD2FD4581271e230360230F9337D5c0430Bf44C0",
         ];
         const confirmationSign1 = 1;
+		bytesData = iface.encodeFunctionData("initialize", [addressesSign1,confirmationSign1,sign0.address]);
 
         let proxyCreatedSign1: ContractTransaction = await proxyFactory
             .connect(sign1)
-            .createProxy(addressesSign1, confirmationSign1);
+            .createProxy(bytesData);
         let receiptSign1: ContractReceipt = await proxyCreatedSign1.wait();
 
         let proxyCreatedAddressSign1: String = receiptSign1.events?.filter(
@@ -176,134 +183,176 @@ describe("01_CommownSWProxyFactory__03_stateVariable", function () {
     });
 });
 
-//		const proxyCreated = await proxyFactory.createProxy(addresses,confirmation);
-//		console.log(proxyCreated); //Returns a transaction
+describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
+	let proxyCreatedSign0: ContractTransaction;
+	let proxyCreatedSign1: ContractTransaction;
+	let proxyCreatedSign2: ContractTransaction;
+    let receiptSign0: ContractReceipt;
+	let receiptSign1: ContractReceipt;
+	let receiptSign2: ContractReceipt;
+    let proxyCreatedAddressSign0: string;
+	let proxyCreatedAddressSign1: string;
+	let proxyCreatedAddressSign2: string;
+	let CSWContractSign0: Contract;
+	let CSWContractSign1: Contract;
+	let CSWContractSign2: Contract;
 
-//If I continue like this, with the true proxy address, it works fine
+	beforeEach(async function () {
+		//1 - deploy the proxy factory
+		CommownSWProxyFactory = await ethers.getContractFactory(
+            "CommownSWProxyFactory"
+        );
+        proxyFactory = await CommownSWProxyFactory.deploy();
+        await proxyFactory.deployed();
 
-// const MyContract = await ethers.getContractFactory("MyContract");
-// const contract = await MyContract.attach("0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e");
-// expect(await proxyContract.confirmationNeeded()).to.equal(2); //true
-// expect(await proxyContract.owners(1)).to.equal("0xdD2FD4581271e230360230F9337D5c0430Bf44C0"); //False and dont know why yet
+		CommownSW = await ethers.getContractFactory("CommownSW");
 
-// describe('MyContract', function () {
-//   it('deploys', async function () {
+		//2 - deploy a proxy for each signer
+        [sign0, sign1, sign2] = await ethers.getSigners();
 
-// 	const [addr0, addr1, addr2] = await ethers.getSigners();
-// 	const MyContractV1 = await ethers.getContractFactory('MyContract');
-// 	const addresses = ["0xbDA5747bFD65F08deb54cb465eB87D40e51B197E","0xdD2FD4581271e230360230F9337D5c0430Bf44C0","0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"];
+		// 2.a for sign0
+		bytesData = iface.encodeFunctionData("initialize", [addresses,confirmation,sign0.address]);
+		proxyCreatedSign0 = await proxyFactory.createProxy(bytesData);
+        receiptSign0 = await proxyCreatedSign0.wait();
+		proxyCreatedAddressSign0 = receiptSign0.events?.filter(
+            (x) => {
+                return x.event == "ProxyCreated";
+            }
+        )[0]?.args?.adrs;
+		CSWContractSign0 = CommownSW.attach(proxyCreatedAddressSign0);
+        
+		// 2.b for sign1
+		const addressesSign1 = [
+            "0xbDA5747bFD65F08deb54cb465eB87D40e51B197E",
+            "0xdD2FD4581271e230360230F9337D5c0430Bf44C0",
+        ];
+        const confirmationSign1 = 1;
+		bytesData = iface.encodeFunctionData("initialize", [addressesSign1,confirmationSign1,sign0.address]);
+        proxyCreatedSign1 = await proxyFactory
+            .connect(sign1)
+            .createProxy(bytesData);
+        receiptSign1 = await proxyCreatedSign1.wait();
+		proxyCreatedAddressSign1 = receiptSign1.events?.filter(
+            (x) => {
+                return x.event == "ProxyCreated";
+            }
+        )[0]?.args?.adrs;
+		CSWContractSign1 = CommownSW.attach(proxyCreatedAddressSign1);
+    });
 
-// 	//addr0
-// 	const myProxyV1 = await upgrades.deployProxy(MyContractV1, [addresses,10], { kind: 'uups' });
-// 	await myProxyV1.deployed();
+    it("01__04_01: it updates the CSW logic contract and all proxies already deployed from the CSW proxy factory", async function () {
+		const logicAdrs = await proxyFactory.logic();
+        expect(logicAdrs).to.be.not.undefined;
+        expect(logicAdrs).to.be.not.null;
+        expect(logicAdrs).to.be.not.NaN;
 
-// 	console.log("myProxyV1.address : ",myProxyV1.address);
-// 	console.log("myProxyV1._deployed : ",await myProxyV1.VERSION());
+		expect(await CSWContractSign0.owner()).to.be.equals(
+            sign0.address
+        );
+		expect(await CSWContractSign1.owner()).to.be.equals(
+            sign0.address
+        );
+		expect(await proxyFactory.owner()).to.be.equals(
+            sign0.address
+        );
 
-// 	expect(await myProxyV1.confirmationNeeded()).to.equal(10);
-// 	expect(await myProxyV1.owner()).to.equal(addr0.address);
-// 	expect(await myProxyV1.owners(1)).to.equal("0xdD2FD4581271e230360230F9337D5c0430Bf44C0");
+		/*console.log("logicAdrs: ",logicAdrs);
+		console.log("await CSWContractSign0.owner(): ",await CSWContractSign0.owner());
+		console.log("await CSWContractSign1.owner(): ",await CSWContractSign1.owner());*/
 
-// 	//addr1
-// 	//await myProxyV1.connect(addr1).
 
-//   });
-// });
+		const CommownSWV2 = await ethers.getContractFactory("CommownSWV2");
+		const proxyListToUpdate = [proxyCreatedAddressSign0,proxyCreatedAddressSign1];
 
-/* describe('MyProxyFactory deployment', function () {
-	it('deploys from addr0', async function () {
-		//First we try to deploy the factory from addr0 (and by the code in the constructor the UUPS contract called MyContract)
-		const [sign0, sign1, sign2] = await ethers.getSigners();
-		const MyProxyFactory1 = await ethers.getContractFactory("MyProxyFactory");
-		const proxyFactory1 = await MyProxyFactory1.deploy();
-		await proxyFactory1.deployed();
-  
-	  	console.log("proxyFactory deployed to: ", proxyFactory1.address);
-		console.log("Imprementation of MyContract: ", await proxyFactory1.logic());
+		for(let i = 0; i< proxyListToUpdate.length; i++){
+			const x = await upgrades.forceImport(proxyListToUpdate[i],CommownSW, {kind:'uups'});
+			await x.deployed();
+			
+			const proxy = await upgrades.upgradeProxy(proxyListToUpdate[i], CommownSWV2);
+			await proxy.deployed();
+			/*console.log("CommownSW's Proxy deployed to: " + proxy.address);
+			console.log(
+				"CommownSW's Implementation (main contract) deployed to: ",
+				await upgrades.erc1967.getImplementationAddress(proxy.address)
+			);*/
+		}
+    });
+
+	it("01__04_02: it updates the CSW logic address in the Factory contract and new users can use it to create new proxy (CSW)", async function () {
+        const CommownSWV2 = await ethers.getContractFactory("CommownSWV2");
 		
-		//expect(await proxyFactory1.admin()).to.equal(sign0.address);
-	  	//expect(await proxyFactory1.x()).to.equal(100);
-	});
-
-	it('deploys from addr1', async function(){
-		//2nd we try to deploy the factory from addr2 (and by the code in the constructor the UUPS contract called MyContract)
-		const [sign0, sign1, sign2] = await ethers.getSigners();
-		const MyProxyFactory2 = new ethers.ContractFactory(MyProxyFactory.abi, MyProxyFactory.bytecode, sign1);
-		const proxyFactory2 = await MyProxyFactory2.deploy(200);
-		await proxyFactory2.deployed();
-
-		console.log("proxyFactory deployed to: ", proxyFactory2.address);
-		console.log("Imprementation of MyContract: ", await proxyFactory2.logic());
+		//Simulate an update of a logic contract for already existing proxies
+		const proxyListToUpdate = [proxyCreatedAddressSign0,proxyCreatedAddressSign1];
+		let newLogicAdrs: string;
+		for(let i = 0; i< proxyListToUpdate.length; i++){
+			const x = await upgrades.forceImport(proxyListToUpdate[i],CommownSW, {kind:'uups'});
+			await x.deployed();
+			
+			const proxy = await upgrades.upgradeProxy(proxyListToUpdate[i], CommownSWV2);
+			await proxy.deployed();
+			newLogicAdrs = await upgrades.erc1967.getImplementationAddress(proxy.address);
+		}
 		
-		//expect(await proxyFactory2.admin()).to.equal(sign1.address);
-	  	//expect(await proxyFactory2.x()).to.equal(200);
-	});
+		//Updates the logic address
+		const defineNewLogicTx = await proxyFactory.defineNewLogic(newLogicAdrs);
+        await defineNewLogicTx.wait();
+
+		//Create a new proxy with that new logic address
+		const addressesSign2 = [
+            "0x3C44CdDdB6a900fa2b585dd299e03d12FA4293BC",
+            "0x90F79bf6EB2c4f870365E785982E1f101E93b906",
+			"0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65",
+			"0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc"
+        ];
+        const confirmationSign2 = 3;
+		bytesData = iface.encodeFunctionData("initialize", [addressesSign2,confirmationSign2,sign0.address]);
+		proxyCreatedSign2 = await proxyFactory.createProxy(bytesData);
+        receiptSign2 = await proxyCreatedSign2.wait();
+		proxyCreatedAddressSign2 = receiptSign2.events?.filter(
+            (x) => {
+                return x.event == "ProxyCreated";
+            }
+        )[0]?.args?.adrs;
+		CSWContractSign2 = CommownSWV2.attach(proxyCreatedAddressSign2);
+		
+		//Controls
+		expect(await proxyFactory.logic()).to.be.equals(newLogicAdrs);
+		expect(await CSWContractSign2.VERSION()).to.be.equals("0.0.2");
+
+    });
+
+	it("01__04_03: After an update of a logic, a pre init contract can not call again initialize method", async function () {
+        const CommownSWV2 = await ethers.getContractFactory("CommownSWV2");
+		expect(await CSWContractSign0.VERSION()).to.be.equals("0.0.1");
+
+		//Simulate an update of a logic contract for already existing proxies
+		const proxyListToUpdate = [proxyCreatedAddressSign0,proxyCreatedAddressSign1];
+		let newLogicAdrs: string;
+		for(let i = 0; i< proxyListToUpdate.length; i++){
+			const x = await upgrades.forceImport(proxyListToUpdate[i],CommownSW, {kind:'uups'});
+			await x.deployed();
+			
+			const proxy = await upgrades.upgradeProxy(proxyListToUpdate[i], CommownSWV2);
+			await proxy.deployed();
+			newLogicAdrs = await upgrades.erc1967.getImplementationAddress(proxy.address);
+		}
+		
+		//Updates the logic address
+		const defineNewLogicTx = await proxyFactory.defineNewLogic(newLogicAdrs);
+        await defineNewLogicTx.wait();
+
+		//Controls
+		expect(await CSWContractSign0.VERSION()).to.be.equals("0.0.2");
+		await expect(
+			CSWContractSign2.initialize(addresses, 2, sign0.address)
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+		await expect(
+			CSWContractSign2.initialize(addresses, 2, sign1.address)
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+		await expect(
+			CSWContractSign2.initialize(["0xbDA5747bFD65F08deb54cb465eB87D40e51B197E","0xdD2FD4581271e230360230F9337D5c0430Bf44C0"], 1, sign0.address)
+        ).to.be.revertedWith("Initializable: contract is already initialized");
+		
+    });
 });
- */
 
-/* describe('MyProxyFactory creationProxy', function () {
-	let sign0 : any;
-	let sign1 : any;
-	let sign2: any;
-	let MyProxyFactory : any;
-	let proxyFactory : any;
-	
-	const addresses = ["0xbDA5747bFD65F08deb54cb465eB87D40e51B197E","0xdD2FD4581271e230360230F9337D5c0430Bf44C0","0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199"];
-	const confirmation = 2;
-		
-	before(async function () {
-		[sign0, sign1, sign2] = await ethers.getSigners();
-		MyProxyFactory = await ethers.getContractFactory("MyProxyFactory");
-		proxyFactory = await MyProxyFactory.deploy();
-		await proxyFactory.deployed();
-	});
-
-	it("deploys a proxy from sign0", async function(){
-		//We try to deploy a proxy of "MyContract" for user sign0
-		const proxyCreated = await proxyFactory.createProxy(addresses,confirmation);
-		
-		const proxyAddress = await proxyFactory.proxiesList(0);
-		console.log(proxyAddress);
-
-		const proxyAddressOfUser = await proxyFactory.commownProxiesPerUser("0xbDA5747bFD65F08deb54cb465eB87D40e51B197E",0);
-		console.log(proxyAddressOfUser);
-		
-		//ça 
-		const proxyContract = new ethers.Contract(proxyAddress,MyContract.abi,sign0); */
-
-/** 
-		 * et ça
-		 * c'est pareil, les deux fonctionnent, mais il faut récup en dur l'adresse du proxyCreated,
-		 * le return semble ne pas fonctionner, car il ramène une transaction et pas l'adresse du contrat
-			const MyContract = await ethers.getContractFactory("MyContract");
-			const contract = await MyContract.attach("0x9f1ac54bef0dd2f6f3462ea0fa94fc62300d3a8e");
-		*/
-
-/* console.log("Type ProxyContracy", typeof await proxyContract.owners(1));
-		console.log("Type ProxyContracy", await proxyContract.owners(1));
-
-
-		expect(await proxyContract.confirmationNeeded()).to.equal(2);
-		expect(ethers.utils.getAddress(await proxyContract.owners(1))).to.equal("0xdD2FD4581271e230360230F9337D5c0430Bf44C0");
-		expect(await proxyContract.owners(1)).to.equal("0xdD2FD4581271e230360230F9337D5c0430Bf44C0");
-		
-	}); */
-
-// it("deploys a proxy from sign1", async function(){
-// 	//We try to deploy a proxy of "MyContract" for user sign1
-// 	const proxyCreated = await proxyFactory.connect(sign1).createProxy(addresses,confirmation);
-// 	console.log("proxyCreated: ", proxyCreated);
-// 	expect(await proxyCreated.confirmationNeeded()).to.equal(2);
-// 	//expect(await proxyCreated.owner()).to.equal(sign1.address);
-// 	//expect(await proxyCreated.owners(1)).to.equal("0xdD2FD4581271e230360230F9337D5c0430Bf44C0");
-// });
-
-// it("deploys a proxy from sign2", async function(){
-// 	//We try to deploy a proxy of "MyContract" for user sign2
-// 	const proxyCreated = await proxyFactory.connect(sign2).createProxy(addresses,confirmation);
-// 	console.log("proxyCreated: ", proxyCreated);
-// 	expect(await proxyCreated.confirmationNeeded()).to.equal(2);
-// 	//expect(await proxyCreated.owner()).to.equal(sign2.address);
-// 	//expect(await proxyCreated.owners(1)).to.equal("0xdD2FD4581271e230360230F9337D5c0430Bf44C0");
-// });
-//});

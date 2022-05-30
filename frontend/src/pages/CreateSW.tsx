@@ -32,6 +32,8 @@ import { useWeb3React } from "@web3-react/core";
 import InjectedWalletConnection from "@components/BrowserWalletConnection";
 import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
 import useContract from "@hooks/useContract";
+import { ethers } from "ethers";
+import { CommownSW } from "@utils/getContract";
 
 function CreateSharedWallet() {
     /* React */
@@ -49,6 +51,7 @@ function CreateSharedWallet() {
     const [maxConfirmation, setMaxConfirmation] = useState<string>("1");
     const [dynamicMaxConfirmation, setDynamicMaxConfirmation] =
         useState<Array<string>>();
+
     const form = useForm({
         initialValues: {
             users: formList([{ useraddress: "", isOwner: true }]),
@@ -77,23 +80,32 @@ function CreateSharedWallet() {
     async function createProxy() {
         try {
             const usersAddress = Object.values(
-                form.values.users.map((user) => user.useraddress)
+                form.values.users.map((user) =>
+                    ethers.utils.getAddress(user.useraddress)
+                )
             );
+
+            let iface = new ethers.utils.Interface(CommownSW.abi);
             const maxSigner: number = parseInt(maxConfirmation);
+            const bytesData = iface.encodeFunctionData("initialize", [
+                usersAddress,
+                maxSigner,
+                "0x06C56896BF629C3cf6F1594062E49081fb996c87",
+            ]);
             await write(
-                contract ? contract.createProxy(usersAddress, maxSigner) : "",
+                contract ? contract.createProxy(bytesData) : "",
                 "Shared Wallet Deployment",
                 "Deploy a proxy for the users of this shared wallet",
                 "Unable to deploy CommOwn - Shared Wallet"
             );
             hideNotification("erorrCreateProxy");
-        } catch (e) {
-            //const message =
+        } catch (error) {
+            const e = error as Error;
             notifications.showNotification({
                 id: "erorrCreateProxy",
-                title: "Erorr create users proxy Owner ",
+                title: "Erorr Creation CSW",
                 color: "red",
-                message: `Unable to call promise : ${e}`,
+                message: `${e.message}`,
             });
         }
     }
@@ -181,7 +193,7 @@ function CreateSharedWallet() {
                                         size="sm"
                                         sx={{ flex: 1 }}
                                     >
-                                        Adress
+                                        Address
                                     </Text>
                                     <Text weight={500} size="sm" pr={90}>
                                         Is Owner
@@ -206,7 +218,7 @@ function CreateSharedWallet() {
                                         })
                                     }
                                 >
-                                    Add another users
+                                    Add another user
                                 </Button>
                             </Group>
                         </Box>

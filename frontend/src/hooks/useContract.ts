@@ -24,12 +24,12 @@ function useContract() {
             });
         } catch (e) {
             const error: any = e as Error;
-            const message = error.data ? error.data.message : e;
+            const message = error.data ? error.data.message : error.message;
             notifications.showNotification({
                 id: `Erorr${name}`,
                 title: `Error ${name}`,
                 color: "red",
-                message: `${errorMsg} ${message}`,
+                message: `${errorMsg} : ${message}`,
             });
             return error;
         }
@@ -54,12 +54,12 @@ function useContract() {
             });
         } catch (e) {
             const error: any = e as Error;
-            const message = error.data ? error.data.message : e;
+            const message = error.data ? error.data.message : error.message;
             notifications.showNotification({
                 id: `Erorr${name}`,
                 title: `Error ${name}`,
                 color: "red",
-                message: `${errorMsg} ${message} `,
+                message: `${errorMsg} : ${message} `,
             });
             return error;
         }

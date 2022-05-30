@@ -90,9 +90,8 @@ function Dashboard() {
         if (usersContractCommownSW && account) {
             const usersBalanceCurrent =
                 await usersContractCommownSW?.balancePerUser(account);
-            const currentBalance = await ethers.utils.formatEther(
-                usersBalanceCurrent
-            );
+            const currentBalance =
+                ethers.utils.formatEther(usersBalanceCurrent);
 
             const lastTransactions: Array<any> = [];
             eventDeposit.map((element) => {
@@ -134,12 +133,6 @@ function Dashboard() {
                     userBalance: await ethers.utils.formatEther(usersBalance),
                 });
             });
-            console.log(
-                "Dashboard | fetchUsersOfWallet | resultOwnersWallet",
-                typeof resultOwnersWallet,
-                resultOwnersWallet
-            );
-
             setUsersWallet(resultOwnersWallet);
         }
     }, [usersOfCSW, account, chainId, eventDeposit]);
