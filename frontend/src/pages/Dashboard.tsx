@@ -168,7 +168,10 @@ function Dashboard() {
     }
 
     const withdrawFunds = useCallback(async () => {
-        const amount = ethers.utils.parseUnits(depositAmount, "ether");
+        const amount = ethers.utils.parseUnits(
+            depositAmount.toString(),
+            "ether"
+        );
         if (usersContractCommownSW) {
             await write(
                 usersContractCommownSW.withdraw(amount),
