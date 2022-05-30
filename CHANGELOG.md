@@ -4,19 +4,15 @@
 ### Bug Fixes
 
 * **commownswv2 and commownsw:** reorder of the files for perf deployment and bug fix for v2 ([ce1cd22](https://github.com/commown-shared-wallet/contracts-dapps/commit/ce1cd229e5c28b74e983a32fea6e996e91bf9fdc))
-* **commownswv2 and commownsw:** reorder of the files for perf deployment and bug fix for v2 ([1d57c90](https://github.com/commown-shared-wallet/contracts-dapps/commit/1d57c908c12e0d04536e7c340b9f1e0cd88a6750))
 
 
 ### Features
 
 * **proxy factory security:** security update ([e5fd9d6](https://github.com/commown-shared-wallet/contracts-dapps/commit/e5fd9d6e235027b3da567e4691092d6893927c0d))
-* **proxy factory security:** security update ([fc9c506](https://github.com/commown-shared-wallet/contracts-dapps/commit/fc9c506ee4f149d3fe664b463fab620eed6ed583))
-
 
 ### Performance Improvements
 
 * **commownsw:** commownsw ordering and cleaning for deployement ([2da069f](https://github.com/commown-shared-wallet/contracts-dapps/commit/2da069f66f3b17946a0b8167103cc2e8ded503a2))
-* **commownsw:** commownsw ordering and cleaning for deployement ([ece75ed](https://github.com/commown-shared-wallet/contracts-dapps/commit/ece75ed45d661e224744ec0a360d4a65cde75db5))
 
 # [1.4.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.3.0...v1.4.0) (2022-05-23)
 
@@ -25,7 +21,6 @@
 
 * **fetch-nft-data:** fetching data of open sea ERC-721 nft ([7986ead](https://github.com/commown-shared-wallet/contracts-dapps/commit/7986ead916af81dbf507c06db25de76cd97844a9))
 * **propose-nft:** parsing nft url and propose nft ([88bce5d](https://github.com/commown-shared-wallet/contracts-dapps/commit/88bce5dc0f7ff79bca05901772cf2aaf46eb0be1))
-* **propose-nft:** parsing nft url and propose nft ([1a9aeed](https://github.com/commown-shared-wallet/contracts-dapps/commit/1a9aeede4bef9bb408d5a47d5af135da2e03da25))
 * **testnet-deploy:** csw proxy factory - deployment on testnet (rinkeby) ([f96a429](https://github.com/commown-shared-wallet/contracts-dapps/commit/f96a429f6534f656169016c109214fd8af44e89c))
 * **testnet-deploy:** csw proxy factory - deployment on testnet (rinkeby) ([d7221d2](https://github.com/commown-shared-wallet/contracts-dapps/commit/d7221d2b34df960a865ca05d467a77766b15153c))
 
@@ -35,7 +30,6 @@
 ### Features
 
 * **create-pockets:** first version of create pockets ([167aab6](https://github.com/commown-shared-wallet/contracts-dapps/commit/167aab6b762874b79147a70404cb28f635968d3b))
-* **create-pockets:** first version of create pockets ([b66400a](https://github.com/commown-shared-wallet/contracts-dapps/commit/b66400a05ee165b076fdd82fdacd879665231411))
 * **wallet-coins:** add view of wallet coins ([4066de1](https://github.com/commown-shared-wallet/contracts-dapps/commit/4066de1afb6c751244c8474913c1e7921be4a2d4))
 * **withdraw:** funciton to withdraw funds ([d41fc54](https://github.com/commown-shared-wallet/contracts-dapps/commit/d41fc540a94de53413c68dbd263d372cbbcb718f))
 
@@ -45,15 +39,9 @@
 ### Features
 
 * **contract-types:** typing for contract, change typechain configuration ([0d16c4d](https://github.com/commown-shared-wallet/contracts-dapps/commit/0d16c4d9dfe93217bb3dd7cb2dd57c7aa50a86a1))
-* **contract-types:** typing for contract, change typechain configuration ([3a2ade8](https://github.com/commown-shared-wallet/contracts-dapps/commit/3a2ade8722348ede07619376d84896ee34d1132e))
-* **contract-types:** typing for contract, change typechain configuration ([7791cff](https://github.com/commown-shared-wallet/contracts-dapps/commit/7791cff41e640f15ef571b3d46f257ff6a2c9d53))
 * **create-csw:** page to create CSW ([3758e22](https://github.com/commown-shared-wallet/contracts-dapps/commit/3758e22fe41b68859f86261b77fe24939040610b))
-* **create-csw:** page to create CSW ([f17547c](https://github.com/commown-shared-wallet/contracts-dapps/commit/f17547c04d56371d73a282cca06cc3c434ca11d4))
 * **creation-csw:** creation of shared wallet ([f93f736](https://github.com/commown-shared-wallet/contracts-dapps/commit/f93f73605972f369cda2bfede3bff85d473f8bb7))
-* **creation-csw:** creation of shared wallet ([df23c61](https://github.com/commown-shared-wallet/contracts-dapps/commit/df23c6163456428abe8e12d662706931d9e54a4d))
-* **creation-csw:** creation of shared wallet ([5f390a0](https://github.com/commown-shared-wallet/contracts-dapps/commit/5f390a02bbaac112920912f0cb762aba1950c012))
 * **getContract:** add CommownSW contract in frontend ([c1258f1](https://github.com/commown-shared-wallet/contracts-dapps/commit/c1258f192f4cba25e86bdc8a6932108720a18835))
-* **getContract:** add CommownSW contract in frontend ([4656ed9](https://github.com/commown-shared-wallet/contracts-dapps/commit/4656ed9c312ba0156104290cf7a2ded9ba680ade))
 
 # [1.1.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.0.0...v1.1.0) (2022-05-08)
 
