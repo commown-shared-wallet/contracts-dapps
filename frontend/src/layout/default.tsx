@@ -29,7 +29,7 @@ import HeaderLayout from "@layout/header";
  * * Wallet && Blockchain interaction
  */
 import { useWeb3React } from "@web3-react/core";
-import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
+import useCommownSW from "@hooks/useCommownSWProxyFactory";
 import useContract from "@hooks/useContract";
 
 const mockdata = [
@@ -113,7 +113,7 @@ export default function Layout() {
 
     /* Contract Value */
     const [proxyContract, setProxyContract] = useState(null);
-    const [contract] = useCommownSWProxyFactory();
+    const [contract] = useCommownSW();
     const [, read] = useContract();
 
     useEffect(() => {
@@ -127,7 +127,7 @@ export default function Layout() {
             try {
                 const address = await read(
                     contract ? contract.address : "",
-                    "Retrieving CSWPF",
+                    "Retrieving CSW",
                     "Retrieving the smart contract ",
                     "Unable to call the CSWPF of the contract"
                 );
