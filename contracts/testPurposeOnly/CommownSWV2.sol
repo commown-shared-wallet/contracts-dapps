@@ -53,8 +53,7 @@ contract CommownSWV2 is
 
     /// @dev pockets list, usefull to get the id
     CommownSWPocket[] public pockets;
-	address[] public test;
-
+	
     /// @dev Utility mapping to check if an address is owner of that CSW
     mapping(address => bool) public isOwner;
 
@@ -290,7 +289,7 @@ contract CommownSWV2 is
     /// @param _tokenAdrs address of the token : it can be a NFT contract 720 1155 or an ERC20
     /// @param _tokenId ID of the NFT : it can be an id of a NFT contract 720 or 1155
 	/// @param _tokenQty Quantity of the token : it can be 1 for 720NFT, or qtity for 1155 or token ERC20
-	/// @param pType 0 = ERC721 ; 1 = ERC1155 ; 2 = ERC20
+	/// @param pType 0 = ERC721 tokenAdrs, tokenId et tokenQty=1; 1 = ERC1155 ; 2 = ERC20 tokenAdrs, tokenQty et tokenId=0
     function proposePocket(
         address _to,
         bytes  memory _data,
@@ -362,12 +361,31 @@ contract CommownSWV2 is
 	/* ================================================================================== */
 
 
+	/// @notice Helper to get a full version of a pocket
+	/// @param _pocketID ID of the pocket
+	/// @return to marketplace address
+	/// @return item token address
+	/// @return data bytes data for futur execution
+	/// @return pStatus pocket status (Voting, ToExecute, Executed)
+	/// @return pType pocket type (ERC721, ERC1155, ERC20)
+	/// @return totalAmount to reach
+	/// @return id token
+	/// @return qty token
 	function getPocketFull(uint256 _pocketID) public view isCommownOwner(msg.sender) pocketExists(_pocketID) returns(
 		address to, address item, bytes memory data, PocketStatus pStatus, PocketType pType, uint256 totalAmount, uint256 id, uint256 qty){
 		CommownSWPocket p = pockets[_pocketID];
 		return(p.to(), p.item(), p.data(), p.pStatus(), p.pType(), p.totalAmount(), p.id(), p.qty());
 	}
 
+	
+	/// @notice Helper to get a light version of a pocket
+	/// @param _pocketID ID of the pocket
+	/// @return item token address
+	/// @return pStatus pocket status (Voting, ToExecute, Executed)
+	/// @return pType pocket type (ERC721, ERC1155, ERC20)
+	/// @return totalAmount to reach
+	/// @return id token
+	/// @return qty token
 	function getPocketLight(uint256 _pocketID) public view isCommownOwner(msg.sender) pocketExists(_pocketID) returns(
 		address item, PocketStatus pStatus, PocketType pType, uint256 totalAmount, uint256 id, uint256 qty){
 		CommownSWPocket p = pockets[_pocketID];

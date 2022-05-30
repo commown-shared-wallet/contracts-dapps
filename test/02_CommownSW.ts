@@ -450,28 +450,6 @@ describe("02_CommownSW__03_createPocket", function () {
 		expect(await CSWContract.sharePerUser(0,sign1.address)).to.be.equal(50);
 		expect(await CSWContract.sharePerUser(0,sign2.address)).to.be.equal(25);
     });
-	it("02__03-06: it votes", async function(){
-		await expect(
-			CSWContract.voteForPocket(1)
-		).to.be.revertedWith("No such pocket exists");
-
-		const proposePocketTx = await CSWContract.proposePocket(
-            addressTo,
-            bytesData,
-            totalAmount,
-            addresses1AndShares1,
-            nftAdrs,
-            nftId,
-			nftQtity,
-			0
-        );
-        await proposePocketTx.wait();
-
-		await expect(
-			CSWContract.voteForPocket(1)
-		).to.be.revertedWith("No such pocket exists");
-
-	});
 });
 
 

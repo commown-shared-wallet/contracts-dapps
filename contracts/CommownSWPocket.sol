@@ -4,9 +4,10 @@ import "./CommownSWUtils.sol";
 
 contract CommownSWPocket {
 
-	address public owner;
+	address public owner; //CommownSW
 	address public to; //To whom the pocket will be buy
 	address public item; //Token address: ERC20, ERC721, ERC1155
+	
 	bytes public data; //Data on chain representing the transaction
 
 	PocketStatus public pStatus;
