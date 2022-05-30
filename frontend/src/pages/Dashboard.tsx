@@ -2,11 +2,13 @@
  * * React Utils
  */
 import { useCallback, useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@hooks/useRedux";
 import { useCommownSW } from "@hooks/useCommownSW";
 import { useCopy } from "@hooks/useCopy";
 import { ellipsisAddress } from "@utils/pipes";
 import { SnippetAccordion } from "@components/SnippetAccordion";
 import { IUsersCSW } from "@interfaces/events";
+import { updateUsersBalance } from "store/users";
 
 /*
  * * Mantine UI Library
@@ -36,13 +38,16 @@ import {
 /*
  * *  Wallet && Blockchain interaction
  */
-import { BigNumber, ethers } from "ethers";
 import { useWeb3React } from "@web3-react/core";
-import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
 import useContract from "@hooks/useContract";
+import { ethers } from "ethers";
+import { toast } from "react-toastify";
 
 function Dashboard() {
     /* React */
+    const usersOfCSW = useAppSelector((state) => state.users);
+    const dispatch = useAppDispatch();
+
     const [copyElement] = useCopy();
     const [write, read] = useContract();
 
@@ -59,7 +64,7 @@ function Dashboard() {
     /*State*/
     const [walletBalance, setWalletBalance] = useState("");
     const [userBalance, setUserBalance] = useState("");
-    const [usersOfWallet, setUsersWallet] = useState(elements);
+    const [usersOfWallet, setUsersOfWallet] = useState(elements);
     const [lastDepositEvents, setLastDepositEvents] = useState<any>();
     const [depositAmount, setDepositAmount] = useState<any>(0.1);
 
@@ -67,19 +72,15 @@ function Dashboard() {
     const context = useWeb3React();
     const { active, library: provider, account, chainId } = context;
 
-    const [
-        usersContractCommownSW,
-        proxyAddressOfUser,
-        usersOfCSW,
-        eventDeposit,
-    ] = useCommownSW();
+    const [usersContractCommownSW, proxyAddressOfUser, , eventDeposit] =
+        useCommownSW();
 
     const fetCSWBalance = useCallback(async () => {
         if (provider) {
             const balance = await provider.getBalance(proxyAddressOfUser);
-            setWalletBalance(await ethers.utils.formatEther(balance));
+            setWalletBalance(ethers.utils.formatEther(balance));
         }
-    }, [usersContractCommownSW, eventDeposit, usersOfWallet, chainId]);
+    }, [usersContractCommownSW, eventDeposit, usersOfCSW, chainId]);
 
     useEffect(() => {
         fetCSWBalance().catch(console.error);
@@ -89,7 +90,7 @@ function Dashboard() {
     const fetchUsersBalance = useCallback(async () => {
         if (usersContractCommownSW && account) {
             const usersBalanceCurrent =
-                await usersContractCommownSW?.balancePerUser(account);
+                await usersContractCommownSW.balancePerUser(account);
             const currentBalance =
                 ethers.utils.formatEther(usersBalanceCurrent);
 
@@ -110,36 +111,45 @@ function Dashboard() {
             setUserBalance(currentBalance);
             setLastDepositEvents(lastTransactions);
         }
-    }, [usersOfCSW, eventDeposit, account, chainId]);
+    }, [eventDeposit, account, chainId, usersContractCommownSW]);
 
     useEffect(() => {
         fetchUsersBalance().catch(console.error);
     }, [fetchUsersBalance]);
 
     // Users Balance
-    const fetchUsersOfWallet = useCallback(async () => {
-        if (usersOfCSW && usersContractCommownSW) {
+    const fetchSummaryOfBalance = useCallback(async () => {
+        if (usersContractCommownSW) {
             const resultOwnersWallet: Array<any> = [];
-            usersOfCSW[0].owners.map(async (ownersAddress) => {
-                console.log(
-                    "Dashboard | fetchUsersOfWallet | usersOfCSW[0]",
-                    usersOfCSW[0]
+
+            usersOfCSW.map(async (owners) => {
+                const { address, balance } = owners;
+
+                const balanceOfUser =
+                    await usersContractCommownSW.balancePerUser(address);
+                dispatch(
+                    updateUsersBalance({
+                        sender: address,
+                        balance: ethers.utils.formatEther(balanceOfUser),
+                    })
                 );
-                const usersBalance =
-                    await usersContractCommownSW.balancePerUser(ownersAddress);
                 resultOwnersWallet.push({
                     assets: "ETH",
-                    address: ellipsisAddress(ownersAddress, 10, 8),
-                    userBalance: await ethers.utils.formatEther(usersBalance),
+                    address: ellipsisAddress(address, 10, 8),
+                    userBalance: ethers.utils.formatEther(balanceOfUser),
                 });
             });
-            setUsersWallet(resultOwnersWallet);
+            setUsersOfWallet(resultOwnersWallet);
         }
-    }, [usersOfCSW, account, chainId, eventDeposit]);
+    }, [eventDeposit, usersContractCommownSW]);
 
     useEffect(() => {
-        fetchUsersOfWallet().catch(console.error);
-    }, [fetchUsersOfWallet]);
+        try {
+            fetchSummaryOfBalance();
+        } catch (error) {
+            toast.error("Error fetch Summary Of Balance");
+        }
+    }, [fetchSummaryOfBalance, usersContractCommownSW]);
 
     async function receiveFunds() {
         if (active) {
@@ -173,7 +183,10 @@ function Dashboard() {
     }
 
     const withdrawFunds = useCallback(async () => {
-        const amount = ethers.utils.parseUnits(depositAmount, "ether");
+        const amount = ethers.utils.parseUnits(
+            depositAmount.toString(),
+            "ether"
+        );
         if (usersContractCommownSW) {
             await write(
                 usersContractCommownSW.withdraw(amount),

@@ -2,7 +2,6 @@
  * * React Utils
  */
 import {
-    HTMLInputTypeAttribute,
     useCallback,
     useEffect,
     useLayoutEffect,
@@ -21,6 +20,9 @@ import {
     ellipsisAddress,
     parseUrlOfOpenSea,
 } from "@utils/pipes";
+
+import { useAppSelector, useAppDispatch } from "@hooks/useRedux";
+import { updateShareUsers } from "../store/users";
 
 /*
  * * Interfaces && types
@@ -73,38 +75,7 @@ import {
  */
 import { ethers } from "ethers";
 import { useWeb3React } from "@web3-react/core";
-import { IProposePocket, IProxyCreated } from "@interfaces/events";
-
-type Action =
-    | { type: "create"; payload: IProxyCreated }
-    | { type: "update"; payload: IUserWithShare; share: number }
-    | { type: "delete"; payload: IProxyCreated };
-
-function reducer(state: IUsersWithShare, action: Action) {
-    switch (action.type) {
-        case "create":
-            const initialState = action.payload.owners.map((user: string) => {
-                return { address: user, share: 10 };
-            });
-            return (state = initialState);
-        case "update":
-            return state.map((user) => {
-                if (user.address == action.payload.address) {
-                    return {
-                        ...user,
-                        address: action.payload.address,
-                        share: action.share,
-                    };
-                } else {
-                    return user;
-                }
-            });
-        case "delete":
-        //return init(action.payload);
-        default:
-            throw new Error("Action" + action.type);
-    }
-}
+import { IProposePocket } from "@interfaces/events";
 
 function AssetsProposals() {
     /*React*/
@@ -148,27 +119,15 @@ function AssetsProposals() {
     const [nftId, setNftId] = useState<string>("");
 
     //State Propose Pocket
-    const [netWorkName, setNetworkName] = useState("Hardhat");
     const [eventProposePocket, setEventProposePocket] =
         useState<IProposePocket>();
 
-    const [usersWithShare, dispatch] = useReducer(reducer, [
-        { address: "0x29D7d1dd5B6f9C864d9db560D72a247c178aE86B", share: 1 },
-        { address: "0x7878D7d1dd5Bf9C864d9db56xcce0D72aaEAZJRI", share: 2 },
-    ]);
+    const usersWithShare = useAppSelector((state) => state.users);
+    const dispatch = useAppDispatch();
 
     /* Web3 */
     const context = useWeb3React();
     const { active, library: provider, chainId } = context;
-
-    //Use EFFECT propose Pocket
-    useEffect(() => {
-        if (active) setNetworkName(provider._network.name);
-    }, [netWorkName]);
-
-    useEffect(() => {
-        if (usersWallet) dispatch({ type: "create", payload: usersWallet[0] });
-    }, [usersWallet]);
 
     //Event ProposePocket
     const handleProposePocket = (
@@ -233,12 +192,14 @@ function AssetsProposals() {
     }, [nftAddress, chainId]);
 
     useLayoutEffect(() => {
-        if (form.values.nftUrl && form.values.nftUrl != "") {
-            const parseUrl = parseUrlOfOpenSea("721", form.values.nftUrl);
-            setNftAddress(parseUrl ? parseUrl.address : "");
-            setNftId(parseUrl ? parseUrl.id : "");
-            fetchDataOfNft();
-        }
+        (async function () {
+            if (form.values.nftUrl && form.values.nftUrl != "") {
+                const parseUrl = parseUrlOfOpenSea("721", form.values.nftUrl);
+                setNftAddress(parseUrl ? parseUrl.address : "");
+                setNftId(parseUrl ? parseUrl.id : "");
+                await fetchDataOfNft();
+            }
+        })();
     }, [fetchDataOfNft, form.values.nftUrl]);
 
     /* components */
@@ -258,11 +219,12 @@ function AssetsProposals() {
                           style={{ flex: 1 }}
                           value={users.share}
                           onChangeEnd={(share) =>
-                              dispatch({
-                                  type: "update",
-                                  share,
-                                  payload: users,
-                              })
+                              dispatch(
+                                  updateShareUsers({
+                                      address: users.address,
+                                      share,
+                                  })
+                              )
                           }
                           marks={[
                               { value: 20, label: "20%" },
@@ -292,13 +254,11 @@ function AssetsProposals() {
                 const totalAmount: number = form.values.totalAmount
                     ? form.values.totalAmount
                     : 0; //amount to be reached to process the future transaction
-                const sharePerUser: Array<number> = [];
-                const usersAddress: Array<string> = [];
+                const usersAndShares: Array<any> = [];
 
                 usersWithShare.map((user) => {
                     const { address, share } = user;
-                    usersAddress.push(address);
-                    sharePerUser.push(share);
+                    usersAndShares.push([address, share]);
                 });
 
                 await write(
@@ -307,16 +267,16 @@ function AssetsProposals() {
                               addressTransmitterTransaction,
                               _data,
                               totalAmount,
-                              usersAddress,
-                              sharePerUser,
+                              usersAndShares,
                               nftAddress,
                               nftId,
-                              nftQtity
+                              nftQtity,
+                              0
                           )
                         : "",
                     "Creation of pockets",
                     "Launch of the creation of a pocket",
-                    "Unable to laucnh pockets"
+                    "Unable to launch pockets"
                 );
                 hideNotification("erorrCreateProxy");
             } catch (e) {

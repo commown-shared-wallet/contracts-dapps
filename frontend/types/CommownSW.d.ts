@@ -25,22 +25,25 @@ interface CommownSWInterface extends ethers.utils.Interface {
     "VERSION()": FunctionFragment;
     "balancePerUser(address)": FunctionFragment;
     "confirmationNeeded()": FunctionFragment;
+    "getPocketFull(uint256)": FunctionFragment;
+    "getPocketLight(uint256)": FunctionFragment;
     "initialize(address[],uint8,address)": FunctionFragment;
     "isOwner(address)": FunctionFragment;
     "isSigned(uint256,address)": FunctionFragment;
-    "items721(uint256,address,uint256)": FunctionFragment;
+    "numConfirmations(uint256)": FunctionFragment;
     "onERC721Received(address,address,uint256,bytes)": FunctionFragment;
     "owner()": FunctionFragment;
     "owners(uint256)": FunctionFragment;
     "pocketMaxID()": FunctionFragment;
     "pockets(uint256)": FunctionFragment;
-    "proposePocket(address,bytes,uint256,address[],uint256[],address,uint256,uint256)": FunctionFragment;
+    "proposePocket(address,bytes,uint256,tuple[],address,uint256,uint256,uint8)": FunctionFragment;
     "proxiableUUID()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
     "sharePerUser(uint256,address)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
     "upgradeTo(address)": FunctionFragment;
     "upgradeToAndCall(address,bytes)": FunctionFragment;
+    "voteForPocket(uint256)": FunctionFragment;
     "withdraw(uint256)": FunctionFragment;
   };
 
@@ -54,6 +57,14 @@ interface CommownSWInterface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getPocketFull",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getPocketLight",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "initialize",
     values: [string[], BigNumberish, string]
   ): string;
@@ -63,8 +74,8 @@ interface CommownSWInterface extends ethers.utils.Interface {
     values: [BigNumberish, string]
   ): string;
   encodeFunctionData(
-    functionFragment: "items721",
-    values: [BigNumberish, string, BigNumberish]
+    functionFragment: "numConfirmations",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "onERC721Received",
@@ -89,9 +100,9 @@ interface CommownSWInterface extends ethers.utils.Interface {
       string,
       BytesLike,
       BigNumberish,
-      string[],
-      BigNumberish[],
+      { user: string; share: BigNumberish }[],
       string,
+      BigNumberish,
       BigNumberish,
       BigNumberish
     ]
@@ -118,6 +129,10 @@ interface CommownSWInterface extends ethers.utils.Interface {
     values: [string, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "voteForPocket",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "withdraw",
     values: [BigNumberish]
   ): string;
@@ -131,10 +146,21 @@ interface CommownSWInterface extends ethers.utils.Interface {
     functionFragment: "confirmationNeeded",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPocketFull",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getPocketLight",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "initialize", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isOwner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "isSigned", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "items721", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "numConfirmations",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "onERC721Received",
     data: BytesLike
@@ -171,6 +197,10 @@ interface CommownSWInterface extends ethers.utils.Interface {
     functionFragment: "upgradeToAndCall",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "voteForPocket",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
 
   events: {
@@ -179,8 +209,9 @@ interface CommownSWInterface extends ethers.utils.Interface {
     "Deposit(address,uint256,uint256,uint256)": EventFragment;
     "Initialized(uint8)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
-    "ProposePocket(address,uint256,address,bytes,uint8,uint256,uint256[])": EventFragment;
+    "ProposePocket(address,uint256,address,bytes,uint8,uint8,uint256,tuple[])": EventFragment;
     "Upgraded(address)": EventFragment;
+    "VotePocket(address,uint256,uint8)": EventFragment;
     "WalletCreated(address,address[],uint256)": EventFragment;
     "Withdraw(address,uint256,uint256,uint256)": EventFragment;
   };
@@ -192,6 +223,7 @@ interface CommownSWInterface extends ethers.utils.Interface {
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "ProposePocket"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Upgraded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "VotePocket"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "WalletCreated"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "Withdraw"): EventFragment;
 }
@@ -218,18 +250,36 @@ export type OwnershipTransferredEvent = TypedEvent<
 >;
 
 export type ProposePocketEvent = TypedEvent<
-  [string, BigNumber, string, string, number, BigNumber, BigNumber[]] & {
+  [
+    string,
+    BigNumber,
+    string,
+    string,
+    number,
+    number,
+    BigNumber,
+    ([string, BigNumber] & { user: string; share: BigNumber })[]
+  ] & {
     sender: string;
     pocketID: BigNumber;
     to: string;
     data: string;
     pStatus: number;
+    pType: number;
     totalAmount: BigNumber;
-    sharePerUser: BigNumber[];
+    sharePerUser: ([string, BigNumber] & { user: string; share: BigNumber })[];
   }
 >;
 
 export type UpgradedEvent = TypedEvent<[string] & { implementation: string }>;
+
+export type VotePocketEvent = TypedEvent<
+  [string, BigNumber, number] & {
+    sender: string;
+    pocketID: BigNumber;
+    numConfirmation: number;
+  }
+>;
 
 export type WalletCreatedEvent = TypedEvent<
   [string, string[], BigNumber] & {
@@ -301,6 +351,45 @@ export class CommownSW extends BaseContract {
 
     confirmationNeeded(overrides?: CallOverrides): Promise<[number]>;
 
+    getPocketFull(
+      _pocketID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        string,
+        string,
+        number,
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        to: string;
+        item: string;
+        data: string;
+        pStatus: number;
+        pType: number;
+        totalAmount: BigNumber;
+        id: BigNumber;
+        qty: BigNumber;
+      }
+    >;
+
+    getPocketLight(
+      _pocketID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, number, number, BigNumber, BigNumber, BigNumber] & {
+        item: string;
+        pStatus: number;
+        pType: number;
+        totalAmount: BigNumber;
+        id: BigNumber;
+        qty: BigNumber;
+      }
+    >;
+
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
@@ -316,12 +405,10 @@ export class CommownSW extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[boolean]>;
 
-    items721(
+    numConfirmations(
       arg0: BigNumberish,
-      arg1: string,
-      arg2: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+    ): Promise<[number]>;
 
     onERC721Received(
       arg0: string,
@@ -337,27 +424,17 @@ export class CommownSW extends BaseContract {
 
     pocketMaxID(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    pockets(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, string, number, BigNumber] & {
-        to: string;
-        data: string;
-        pStatus: number;
-        totalAmount: BigNumber;
-      }
-    >;
+    pockets(arg0: BigNumberish, overrides?: CallOverrides): Promise<[string]>;
 
     proposePocket(
       _to: string,
       _data: BytesLike,
       _totalAmount: BigNumberish,
-      _users: string[],
-      _sharePerUser: BigNumberish[],
-      _nftAdrs: string,
-      _nftId: BigNumberish,
-      _nftQtity: BigNumberish,
+      _shares: { user: string; share: BigNumberish }[],
+      _tokenAdrs: string,
+      _tokenId: BigNumberish,
+      _tokenQty: BigNumberish,
+      pType: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -389,6 +466,11 @@ export class CommownSW extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    voteForPocket(
+      _pocketID: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     withdraw(
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -400,6 +482,45 @@ export class CommownSW extends BaseContract {
   balancePerUser(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
   confirmationNeeded(overrides?: CallOverrides): Promise<number>;
+
+  getPocketFull(
+    _pocketID: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [
+      string,
+      string,
+      string,
+      number,
+      number,
+      BigNumber,
+      BigNumber,
+      BigNumber
+    ] & {
+      to: string;
+      item: string;
+      data: string;
+      pStatus: number;
+      pType: number;
+      totalAmount: BigNumber;
+      id: BigNumber;
+      qty: BigNumber;
+    }
+  >;
+
+  getPocketLight(
+    _pocketID: BigNumberish,
+    overrides?: CallOverrides
+  ): Promise<
+    [string, number, number, BigNumber, BigNumber, BigNumber] & {
+      item: string;
+      pStatus: number;
+      pType: number;
+      totalAmount: BigNumber;
+      id: BigNumber;
+      qty: BigNumber;
+    }
+  >;
 
   initialize(
     _owners: string[],
@@ -416,12 +537,10 @@ export class CommownSW extends BaseContract {
     overrides?: CallOverrides
   ): Promise<boolean>;
 
-  items721(
+  numConfirmations(
     arg0: BigNumberish,
-    arg1: string,
-    arg2: BigNumberish,
     overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  ): Promise<number>;
 
   onERC721Received(
     arg0: string,
@@ -437,27 +556,17 @@ export class CommownSW extends BaseContract {
 
   pocketMaxID(overrides?: CallOverrides): Promise<BigNumber>;
 
-  pockets(
-    arg0: BigNumberish,
-    overrides?: CallOverrides
-  ): Promise<
-    [string, string, number, BigNumber] & {
-      to: string;
-      data: string;
-      pStatus: number;
-      totalAmount: BigNumber;
-    }
-  >;
+  pockets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
   proposePocket(
     _to: string,
     _data: BytesLike,
     _totalAmount: BigNumberish,
-    _users: string[],
-    _sharePerUser: BigNumberish[],
-    _nftAdrs: string,
-    _nftId: BigNumberish,
-    _nftQtity: BigNumberish,
+    _shares: { user: string; share: BigNumberish }[],
+    _tokenAdrs: string,
+    _tokenId: BigNumberish,
+    _tokenQty: BigNumberish,
+    pType: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -489,6 +598,11 @@ export class CommownSW extends BaseContract {
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  voteForPocket(
+    _pocketID: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   withdraw(
     _amount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -500,6 +614,45 @@ export class CommownSW extends BaseContract {
     balancePerUser(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     confirmationNeeded(overrides?: CallOverrides): Promise<number>;
+
+    getPocketFull(
+      _pocketID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [
+        string,
+        string,
+        string,
+        number,
+        number,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ] & {
+        to: string;
+        item: string;
+        data: string;
+        pStatus: number;
+        pType: number;
+        totalAmount: BigNumber;
+        id: BigNumber;
+        qty: BigNumber;
+      }
+    >;
+
+    getPocketLight(
+      _pocketID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<
+      [string, number, number, BigNumber, BigNumber, BigNumber] & {
+        item: string;
+        pStatus: number;
+        pType: number;
+        totalAmount: BigNumber;
+        id: BigNumber;
+        qty: BigNumber;
+      }
+    >;
 
     initialize(
       _owners: string[],
@@ -516,12 +669,10 @@ export class CommownSW extends BaseContract {
       overrides?: CallOverrides
     ): Promise<boolean>;
 
-    items721(
+    numConfirmations(
       arg0: BigNumberish,
-      arg1: string,
-      arg2: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    ): Promise<number>;
 
     onERC721Received(
       arg0: string,
@@ -537,27 +688,17 @@ export class CommownSW extends BaseContract {
 
     pocketMaxID(overrides?: CallOverrides): Promise<BigNumber>;
 
-    pockets(
-      arg0: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, string, number, BigNumber] & {
-        to: string;
-        data: string;
-        pStatus: number;
-        totalAmount: BigNumber;
-      }
-    >;
+    pockets(arg0: BigNumberish, overrides?: CallOverrides): Promise<string>;
 
     proposePocket(
       _to: string,
       _data: BytesLike,
       _totalAmount: BigNumberish,
-      _users: string[],
-      _sharePerUser: BigNumberish[],
-      _nftAdrs: string,
-      _nftId: BigNumberish,
-      _nftQtity: BigNumberish,
+      _shares: { user: string; share: BigNumberish }[],
+      _tokenAdrs: string,
+      _tokenId: BigNumberish,
+      _tokenQty: BigNumberish,
+      pType: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -584,6 +725,11 @@ export class CommownSW extends BaseContract {
     upgradeToAndCall(
       newImplementation: string,
       data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    voteForPocket(
+      _pocketID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -669,24 +815,38 @@ export class CommownSW extends BaseContract {
       { previousOwner: string; newOwner: string }
     >;
 
-    "ProposePocket(address,uint256,address,bytes,uint8,uint256,uint256[])"(
+    "ProposePocket(address,uint256,address,bytes,uint8,uint8,uint256,tuple[])"(
       sender?: string | null,
       pocketID?: null,
       to?: null,
       data?: null,
       pStatus?: null,
+      pType?: null,
       totalAmount?: null,
       sharePerUser?: null
     ): TypedEventFilter<
-      [string, BigNumber, string, string, number, BigNumber, BigNumber[]],
+      [
+        string,
+        BigNumber,
+        string,
+        string,
+        number,
+        number,
+        BigNumber,
+        ([string, BigNumber] & { user: string; share: BigNumber })[]
+      ],
       {
         sender: string;
         pocketID: BigNumber;
         to: string;
         data: string;
         pStatus: number;
+        pType: number;
         totalAmount: BigNumber;
-        sharePerUser: BigNumber[];
+        sharePerUser: ([string, BigNumber] & {
+          user: string;
+          share: BigNumber;
+        })[];
       }
     >;
 
@@ -696,18 +856,32 @@ export class CommownSW extends BaseContract {
       to?: null,
       data?: null,
       pStatus?: null,
+      pType?: null,
       totalAmount?: null,
       sharePerUser?: null
     ): TypedEventFilter<
-      [string, BigNumber, string, string, number, BigNumber, BigNumber[]],
+      [
+        string,
+        BigNumber,
+        string,
+        string,
+        number,
+        number,
+        BigNumber,
+        ([string, BigNumber] & { user: string; share: BigNumber })[]
+      ],
       {
         sender: string;
         pocketID: BigNumber;
         to: string;
         data: string;
         pStatus: number;
+        pType: number;
         totalAmount: BigNumber;
-        sharePerUser: BigNumber[];
+        sharePerUser: ([string, BigNumber] & {
+          user: string;
+          share: BigNumber;
+        })[];
       }
     >;
 
@@ -718,6 +892,24 @@ export class CommownSW extends BaseContract {
     Upgraded(
       implementation?: string | null
     ): TypedEventFilter<[string], { implementation: string }>;
+
+    "VotePocket(address,uint256,uint8)"(
+      sender?: string | null,
+      pocketID?: null,
+      numConfirmation?: null
+    ): TypedEventFilter<
+      [string, BigNumber, number],
+      { sender: string; pocketID: BigNumber; numConfirmation: number }
+    >;
+
+    VotePocket(
+      sender?: string | null,
+      pocketID?: null,
+      numConfirmation?: null
+    ): TypedEventFilter<
+      [string, BigNumber, number],
+      { sender: string; pocketID: BigNumber; numConfirmation: number }
+    >;
 
     "WalletCreated(address,address[],uint256)"(
       creator?: string | null,
@@ -775,6 +967,16 @@ export class CommownSW extends BaseContract {
 
     confirmationNeeded(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getPocketFull(
+      _pocketID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getPocketLight(
+      _pocketID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     initialize(
       _owners: string[],
       _confirmationNeeded: BigNumberish,
@@ -790,10 +992,8 @@ export class CommownSW extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    items721(
+    numConfirmations(
       arg0: BigNumberish,
-      arg1: string,
-      arg2: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -817,11 +1017,11 @@ export class CommownSW extends BaseContract {
       _to: string,
       _data: BytesLike,
       _totalAmount: BigNumberish,
-      _users: string[],
-      _sharePerUser: BigNumberish[],
-      _nftAdrs: string,
-      _nftId: BigNumberish,
-      _nftQtity: BigNumberish,
+      _shares: { user: string; share: BigNumberish }[],
+      _tokenAdrs: string,
+      _tokenId: BigNumberish,
+      _tokenQty: BigNumberish,
+      pType: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -853,6 +1053,11 @@ export class CommownSW extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    voteForPocket(
+      _pocketID: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     withdraw(
       _amount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -868,6 +1073,16 @@ export class CommownSW extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     confirmationNeeded(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPocketFull(
+      _pocketID: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getPocketLight(
+      _pocketID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -889,10 +1104,8 @@ export class CommownSW extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    items721(
+    numConfirmations(
       arg0: BigNumberish,
-      arg1: string,
-      arg2: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -922,11 +1135,11 @@ export class CommownSW extends BaseContract {
       _to: string,
       _data: BytesLike,
       _totalAmount: BigNumberish,
-      _users: string[],
-      _sharePerUser: BigNumberish[],
-      _nftAdrs: string,
-      _nftId: BigNumberish,
-      _nftQtity: BigNumberish,
+      _shares: { user: string; share: BigNumberish }[],
+      _tokenAdrs: string,
+      _tokenId: BigNumberish,
+      _tokenQty: BigNumberish,
+      pType: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -956,6 +1169,11 @@ export class CommownSW extends BaseContract {
       newImplementation: string,
       data: BytesLike,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    voteForPocket(
+      _pocketID: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     withdraw(

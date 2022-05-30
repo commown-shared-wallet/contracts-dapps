@@ -5,7 +5,6 @@ chai.use(solidity);
 
 import "@nomiclabs/hardhat-ethers";
 import { ethers, upgrades } from "hardhat";
-import { CommownSWProxyFactoryInterface } from "../frontend/types/CommownSWProxyFactory";
 import {
     Contract,
     ContractFactory,
@@ -355,4 +354,3 @@ describe("01_CommownSWProxyFactory__04_upgradeLogicAndProxies", function () {
 		
     });
 });
-

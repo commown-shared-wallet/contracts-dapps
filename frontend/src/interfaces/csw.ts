@@ -1,6 +1,7 @@
 export interface IUserWithShare {
     address: string;
     share: number;
+    balance: number;
 }
 export interface IUsersWithShare extends Array<IUserWithShare> {}
 

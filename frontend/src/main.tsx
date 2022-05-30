@@ -3,9 +3,18 @@
  */
 import React from "react";
 import ReactDOM from "react-dom/client";
+
+/* Router */
 import { BrowserRouter as Router } from "react-router-dom";
+
+/* State Management */
+import { Provider } from "react-redux";
+import store from "./store";
+
 import App from "./App";
 import "./index.css";
+
+/* Notifications */
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.min.css";
 
@@ -23,12 +32,14 @@ import getLibrary from "utils/getLibrary";
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <React.StrictMode>
         <Web3ReactProvider getLibrary={getLibrary}>
-            <ToastContainer />
-            <NotificationsProvider>
-                <Router>
-                    <App />
-                </Router>
-            </NotificationsProvider>
+            <Provider store={store}>
+                <ToastContainer />
+                <NotificationsProvider>
+                    <Router>
+                        <App />
+                    </Router>
+                </NotificationsProvider>
+            </Provider>
         </Web3ReactProvider>
     </React.StrictMode>
 );
