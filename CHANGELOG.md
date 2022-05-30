@@ -1,3 +1,23 @@
+# [1.5.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.4.0...v1.5.0) (2022-05-30)
+
+
+### Bug Fixes
+
+* **commownswv2 and commownsw:** reorder of the files for perf deployment and bug fix for v2 ([ce1cd22](https://github.com/commown-shared-wallet/contracts-dapps/commit/ce1cd229e5c28b74e983a32fea6e996e91bf9fdc))
+* **commownswv2 and commownsw:** reorder of the files for perf deployment and bug fix for v2 ([1d57c90](https://github.com/commown-shared-wallet/contracts-dapps/commit/1d57c908c12e0d04536e7c340b9f1e0cd88a6750))
+
+
+### Features
+
+* **proxy factory security:** security update ([e5fd9d6](https://github.com/commown-shared-wallet/contracts-dapps/commit/e5fd9d6e235027b3da567e4691092d6893927c0d))
+* **proxy factory security:** security update ([fc9c506](https://github.com/commown-shared-wallet/contracts-dapps/commit/fc9c506ee4f149d3fe664b463fab620eed6ed583))
+
+
+### Performance Improvements
+
+* **commownsw:** commownsw ordering and cleaning for deployement ([2da069f](https://github.com/commown-shared-wallet/contracts-dapps/commit/2da069f66f3b17946a0b8167103cc2e8ded503a2))
+* **commownsw:** commownsw ordering and cleaning for deployement ([ece75ed](https://github.com/commown-shared-wallet/contracts-dapps/commit/ece75ed45d661e224744ec0a360d4a65cde75db5))
+
 # [1.4.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.3.0...v1.4.0) (2022-05-23)
 
 
