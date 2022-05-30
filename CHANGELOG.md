@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.5.0...v1.6.0) (2022-05-30)
+
+
+### Features
+
+* **redux:** add redux for state management ([c6223cf](https://github.com/commown-shared-wallet/contracts-dapps/commit/c6223cf5cb7f187f94d7fa97b6f8d2490b52476d))
+
 # [1.5.0](https://github.com/commown-shared-wallet/contracts-dapps/compare/v1.4.0...v1.5.0) (2022-05-30)
 
 
