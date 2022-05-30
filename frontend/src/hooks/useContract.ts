@@ -35,8 +35,8 @@ function useContract() {
         }
     }
 
-    async function read(
-        contract: Promise<ContractTransaction> | string,
+    async function read<T>(
+        contract: Promise<T> | string,
         name: String,
         message: string,
         errorMsg: string = ""

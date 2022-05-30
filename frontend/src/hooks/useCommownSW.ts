@@ -2,14 +2,15 @@
  * * React Utils
  */
 import { useCallback, useEffect, useState } from "react";
-import { IDepositEvents, IProxyCreated } from "@interfaces/events";
+import { IDepositEvents } from "@interfaces/events";
+
+import { useAppSelector, useAppDispatch } from "@hooks/useRedux";
+import { setUsers, updateUsersBalance } from "../store/users";
+
 import useCommownSWProxyFactory from "@hooks/useCommownSWProxyFactory";
 import { CommownSW } from "@utils/getContract";
 
-/*
- * * Mantine UI Library
- */
-import { useNotifications } from "@mantine/notifications";
+import { toast } from "react-toastify";
 
 /*
  * *  Wallet && Blockchain interaction
@@ -19,22 +20,21 @@ import { useWeb3React } from "@web3-react/core";
 import { CommownSW as ICSW } from "@contract-types/CommownSW";
 
 export function useCommownSW() {
-    /**Mantine */
-    const notifications = useNotifications();
+    /* React */
+    const usersOfCSW = useAppSelector((state) => state.users);
+    const dispatch = useAppDispatch();
 
-    /*
-     * Web 3
-     */
+    /* Web 3 */
     const context = useWeb3React();
     const { active, library: provider, account } = context;
-    /**Contract */
+
+    /* Contract */
     const [contract] = useCommownSWProxyFactory();
     const [proxyAddressOfUser, setProxyAddressOfUser] = useState("");
     const [usersContractCommownSW, setUsersContractCommownSW] =
         useState<ICSW>();
-    const [usersOfCSW, setUsersOfCSW] = useState<Array<IProxyCreated>>();
 
-    /** Events */
+    /* Events */
     const [eventDeposit, setEventDeposit] = useState<IDepositEvents>([
         {
             sender: "0x0",
@@ -85,40 +85,47 @@ export function useCommownSW() {
 
     //Get owners of contract by CSWProxyFactoryEvents
     const handleProxyCreated = (adrs: string, owners: string[]) => {
-        const arrayProxyCreated = [
-            {
-                adrs,
-                owners,
-            },
-        ];
+        const eventProxyCreated = {
+            adrs,
+            owners,
+        };
         localStorage.removeItem("usersOfWallet");
         localStorage.setItem(
             "usersOfWallet",
-            JSON.stringify(arrayProxyCreated)
+            JSON.stringify(eventProxyCreated)
         );
     };
 
     const fetchEventsProxyCreated = useCallback(async () => {
-        if (contract && proxyAddressOfUser) {
-            //const filterTo = await contract.filters.ProxyCreated(proxyAddressOfUser);
-            await contract.on("ProxyCreated", handleProxyCreated);
-            const usersJSON = localStorage.getItem("usersOfWallet");
-            const users = usersJSON != null ? JSON.parse(usersJSON) : "{}";
-            setUsersOfCSW(users);
-            console.log("useCommownSW || proxyCreated : ", usersOfCSW);
-        }
+        if (contract) contract.on("ProxyCreated", handleProxyCreated);
+    }, [proxyAddressOfUser, fetchContractProxy]);
+
+    const fetchUsers = useCallback(async () => {
+        const usersJSON = localStorage.getItem("usersOfWallet");
+        const users = usersJSON != null ? JSON.parse(usersJSON) : "{}";
+        await dispatch(setUsers(users.owners));
+        /*
+                dispatch({
+                    type: "users/setUsers",
+                    payload: users.owners,
+                });
+            */
     }, [proxyAddressOfUser]);
 
     useEffect(() => {
         try {
             fetchEventsProxyCreated();
+            fetchUsers();
         } catch (error) {
             console.error("useCommownCSW || fetchEventsProxyCreated", error);
+            toast.error("error fetching users", {
+                position: toast.POSITION.BOTTOM_RIGHT,
+            });
         }
         return () => {
             contract?.removeAllListeners("ProxyCreated");
         };
-    }, [fetchEventsProxyCreated]);
+    }, [fetchEventsProxyCreated, fetchUsers]);
 
     //Event Deposit
     const handleDeposit = (
@@ -136,6 +143,12 @@ export function useCommownSW() {
             },
         ];
         setEventDeposit(arrayDepositEvents);
+        dispatch(
+            updateUsersBalance({
+                sender,
+                balance: ethers.utils.formatEther(userBalance),
+            })
+        );
     };
 
     useEffect(() => {

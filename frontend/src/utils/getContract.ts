@@ -11,7 +11,7 @@ interface IContract {
 
 export const CommownSWProxyFactory: IContract = {
     hardhat: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-    rinkeby: "0x158fefD174886dA97a5d68212257C21aD30Eb69E",
+    rinkeby: "0x2D4a489C501E021C86fc8d1a7927dd6eB0eCF7a1", //0x158fefD174886dA97a5d68212257C21aD30Eb69E
     abi: CommownSWProxyFactoryArtifacts.abi,
     bytecode: CommownSWProxyFactoryArtifacts.bytecode,
 };

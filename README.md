@@ -55,10 +55,12 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 | [v1.1.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.1.0) | 👛 Connecting to a wallet                              |   ✅   |
 | [v1.2.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.2.0) | 📦 Creating a CommOwn Shared Wallet & Funds management |   ✅   |
 | [v1.3.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.3.0) | 🦾 Create Pocket & Visualize your assets               |   ✅   |
-| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 NFT Proposals & Refactoring Pockets                 |   🔁   |
-|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                                  |   🚧   |
-|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 Resale of NFT                                     |   🚧   |
-|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                                     |   🚧   |
+| [v1.4.x](https://github.com/commown-shared-wallet/contracts-dapps/releases/tag/v1.4.0) | 👨🏾‍💻 NFT Proposals & Refactoring Pockets                 |   ✅   |
+|   [v1.5.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🛠️ Security amelioration                                  |   ✅   |
+|   [v1.6.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 🤝🏾 State management with redux         |   🚧   |
+|   [v1.7.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | 💵 Purchase of an NFT                                     |   🚧   |
+|   [v1.8.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Resale of NFT                                                               |   🚧   |
+|   [v1.9.x](https://github.com/commown-shared-wallet/contracts-dapps/contract-dapps)    | ⚡️ Lending of NFT                                     |   🚧   |
 
 ## Directory Structure <a name="directory-sructure"></a>
 
@@ -77,18 +79,20 @@ Repository containing the contracts and the interface of the CommOwn Shared Wall
 `├──────` [`components`](./frontend/src/components) — Reusable components for pages and layout<br>
 `├──────` [`hooks`](./frontend/src/hooks) — React hooks such as `useCommownSW`, `useCopy`, etc.<br>
 `├──────` [`interface`](./frontend/src/interfaces) — Objects description.<br>
-`├──────` [`layout`](./frontend//src/layout) — Reusable page templates<br>
-`├──────` [`pages`](./frontend//src/pages) — Pages of applications<br>
-`├──────` [`App.tsx`](./frontend//src/App.tsx) — App Container and Routes<br>
-`├──────` [`main.tsx`](./frontend//src/main.tsx) — Inject app in index.html<br>
+`├──────` [`layout`](./frontend/src/layout) — Reusable page templates<br>
+`├──────` [`pages`](./frontend/src/pages) — Pages of applications<br>
+`├──────` [`store`](./frontend/src/store) — State Management<br>
+`├──────` [`App.tsx`](./frontend/src/App.tsx) — App Container and Routes<br>
+`├──────` [`main.tsx`](./frontend/src/main.tsx) — Inject app in index.html<br>
 `├────` [`types`](./frontend/types) — Type declaration files for Contracts <br>  
-`├────` [`index.html`](./frontend//index.html) — Application entry point<br>
+`├────` [`index.html`](./frontend/index.html) — Application entry point<br>
 
 ## Tech Stack <a name="tech-stack"></a>
 
 -   [Hardhat](https://hardhat.org/), [ethers.js](https://docs.ethers.io/), [web3-react](https://github.com/NoahZinsmeister/web3-react),
     [TypeChain](https://github.com/dethcrypto/TypeChain/), [Waffle](https://getwaffle.io/)
 -   [React](https://reactjs.org/), [React Router](https://reactrouter.com/),
+    [Redux Toolkit](https://redux-toolkit.js.org/), [React Redux](https://react-redux.js.org),
     [Mantine](https://mantine.dev/), [Mantine UI](https://ui.mantine.dev/), [Cypress](https://github.com/cypress-io/cypress/), [Vitest](https://vitest.dev/)
 -   [TypeScript](https://www.typescriptlang.org/),
     [ESLint](https://eslint.org/), [Prettier](https://prettier.io/),
