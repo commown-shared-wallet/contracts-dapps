@@ -10,7 +10,7 @@
     "dependencies": {
         "@openzeppelin/contracts": "^4.5.0",
         "@openzeppelin/contracts-upgradeable": "^4.5.2",
-        "@openzeppelin/hardhat-upgrades": "^1.18.1"
+        "@openzeppelin/hardhat-upgrades": "^1.19.0"
     },
     "devDependencies": {
         "@commitlint/cli": "^17.0.2",
