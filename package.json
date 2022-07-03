@@ -62,7 +62,7 @@
         "solhint": "^3.3.6",
         "solidity-coverage": "^0.7.16",
         "standard": "^17.0.0",
-        "ts-node": "^10.8.1",
+        "ts-node": "^10.8.2",
         "typechain": "^5.1.2",
         "typescript": "^4.7.4",
         "validate-branch-name": "^1.3.0"
