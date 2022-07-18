@@ -48,7 +48,7 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "ethereum-waffle": "^3.0.0",
         "ethers": "^5.6.9",
-        "git-precommit-checks": "^3.0.7",
+        "git-precommit-checks": "^3.0.8",
         "hardhat": "^2.10.1",
         "hardhat-deploy": "^0.11.11",
         "hardhat-docgen": "^1.3.0",
