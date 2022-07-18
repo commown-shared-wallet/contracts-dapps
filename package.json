@@ -32,7 +32,7 @@
         "@typescript-eslint/eslint-plugin": "^4.29.1",
         "@typescript-eslint/parser": "^4.29.1",
         "chai": "^4.2.0",
-        "commitizen": "^4.2.4",
+        "commitizen": "^4.2.5",
         "dotenv": "^16.0.1",
         "eslint": "^7.29.0",
         "eslint-config-airbnb": "^19.0.4",
