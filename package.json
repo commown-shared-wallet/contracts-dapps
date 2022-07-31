@@ -8,7 +8,7 @@
         "commit": "git cz"
     },
     "dependencies": {
-        "@openzeppelin/contracts": "^4.7.1",
+        "@openzeppelin/contracts": "^4.7.2",
         "@openzeppelin/contracts-upgradeable": "^4.7.1",
         "@openzeppelin/hardhat-upgrades": "^1.19.1"
     },
