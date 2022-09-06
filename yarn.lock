@@ -7371,10 +7371,10 @@ git-log-parser@^1.2.0:
     through2 "~2.0.0"
     traverse "~0.6.6"
 
-git-precommit-checks@^3.0.8:
-  version "3.0.8"
-  resolved "https://registry.yarnpkg.com/git-precommit-checks/-/git-precommit-checks-3.0.8.tgz#481b4b7122a621dc0de7286e40eb193efbcb8377"
-  integrity sha512-gcke3t1xnrPMhszdae6YWd7sXb9ugJPzei11Gr4WQT2ldSN6WKovH5xsczo0M7ypbMQCutvAPCk2V7nKdfo7VA==
+git-precommit-checks@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/git-precommit-checks/-/git-precommit-checks-3.1.0.tgz#994a28e21ae36044e4dea3013851087189f8c013"
+  integrity sha512-l3gCICC/Sgpe+WhhImzX3qx05L7nXpyXZa+lomR0OWcqHxYdKKNf1q0hp9/BaY42Kn5JP45G68Z6C9tDgp/tOg==
   dependencies:
     cli-table "^0.3.1"
     find-up "^4.1.0"
