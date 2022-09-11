@@ -60,7 +60,7 @@
         "prettier-plugin-solidity": "^1.0.0-dev.23",
         "semantic-release": "^19.0.5",
         "solhint": "^3.3.6",
-        "solidity-coverage": "^0.7.16",
+        "solidity-coverage": "^0.8.2",
         "standard": "^17.0.0",
         "ts-node": "^10.9.1",
         "typechain": "^5.1.2",
