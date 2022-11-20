@@ -7811,10 +7811,10 @@ hardhat-docgen@^1.3.0:
     vue-template-compiler "^2.6.14"
     webpack "^5.65.0"
 
-hardhat-ethernal@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/hardhat-ethernal/-/hardhat-ethernal-3.0.0.tgz#b37b5f3f79238dd6459bed81b32263bc7d323568"
-  integrity sha512-TaQTZ9L8uxc9mKE/XhON1C+ulbteVKP4yDn2/gnx7yfYkq2Lhpi37sKsYHxd/VSHqps/aScduf9tD8OiKELtbw==
+hardhat-ethernal@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/hardhat-ethernal/-/hardhat-ethernal-3.0.1.tgz#b9698c19898d6f9070d0a5034a99d39bd826b88c"
+  integrity sha512-I036c/4GTjHn+ejMZE4ejOFguX8kNOve8n3k2fhr52nft5dotFgOQVBFmcVAuyTSN1OwKHvphs2KAMFAR20Smw==
   dependencies:
     "@firebase/firestore-types" "2.2.0"
     axios "^0.27.2"
