@@ -55,7 +55,7 @@
         "hardhat-ethernal": "^3.0.1",
         "hardhat-gas-reporter": "^1.0.9",
         "husky": "^8.0.2",
-        "lint-staged": "^13.0.3",
+        "lint-staged": "^13.0.4",
         "prettier": "^2.7.1",
         "prettier-plugin-solidity": "^1.0.0",
         "semantic-release": "^19.0.5",
