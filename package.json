@@ -57,7 +57,7 @@
         "husky": "^8.0.2",
         "lint-staged": "^13.1.0",
         "prettier": "^2.8.1",
-        "prettier-plugin-solidity": "^1.0.0",
+        "prettier-plugin-solidity": "^1.1.0",
         "semantic-release": "^19.0.5",
         "solhint": "^3.3.6",
         "solidity-coverage": "^0.8.2",
