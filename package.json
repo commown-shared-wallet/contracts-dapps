@@ -14,7 +14,7 @@
     },
     "devDependencies": {
         "@commitlint/cli": "^17.6.1",
-        "@commitlint/config-conventional": "^17.6.1",
+        "@commitlint/config-conventional": "^17.6.5",
         "@commitlint/cz-commitlint": "^17.5.0",
         "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
         "@nomiclabs/hardhat-etherscan": "^3.1.7",
